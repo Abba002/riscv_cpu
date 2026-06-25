@@ -1,296 +1,241 @@
-# RISC-V Processor Project
-
-# Setup and Command Reference
-
-## Environment Information
-
-Machine:
-
-* 2020 Intel MacBook Pro
-* macOS 15.7.4
-
-Tools:
-
-* Homebrew
-* VS Code
-* Git
-* GitHub
-* Icarus Verilog
-
 ---
 
-# Homebrew Installation
+# Running Individual Modules
 
-Install Homebrew:
+## ALU
 
-```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-```
-
-Add Homebrew to PATH:
-
-```bash
-echo >> ~/.zprofile
-
-echo 'eval "$(/usr/local/bin/brew shellenv zsh)"' >> ~/.zprofile
-
-eval "$(/usr/local/bin/brew shellenv zsh)"
-```
-
-Verify:
-
-```bash
-brew --version
-```
-
----
-
-# Tool Installation
-
-Install Icarus Verilog:
-
-```bash
-brew install icarus-verilog
-```
-
-Install Git:
-
-```bash
-brew install git
-```
-
-Install GitHub CLI:
-
-```bash
-brew install gh
-```
-
-Verify installations:
-
-```bash
-iverilog -V
-
-git --version
-
-gh --version
-```
-
----
-
-# VS Code
-
-Open current folder in VS Code:
-
-```bash
-code .
-```
-
-Open a specific file:
-
-```bash
-code filename.v
-```
-
----
-
-# Project Creation
-
-Create project directory:
-
-```bash
-mkdir riscv_cpu
-
-cd riscv_cpu
-```
-
-Create folders:
-
-```bash
-mkdir rtl
-
-mkdir tb
-
-mkdir docs
-```
-
-Create files:
-
-```bash
-touch README.md
-
-touch .gitignore
-
-touch rtl/alu.v
-
-touch tb/alu_tb.v
-```
-
----
-
-# Git Commands
-
-Initialize repository:
-
-```bash
-git init
-```
-
-Check status:
-
-```bash
-git status
-```
-
-Add files:
-
-```bash
-git add .
-```
-
-Commit changes:
-
-```bash
-git commit -m "commit message"
-```
-
-View commit history:
-
-```bash
-git log
-```
-
-Push to GitHub:
-
-```bash
-git push
-```
-
----
-
-# Useful GitHub Commands
-
-Login:
-
-```bash
-gh auth login
-```
-
-Check remote:
-
-```bash
-git remote -v
-```
-
-Change remote URL:
-
-```bash
-git remote set-url origin https://github.com/USERNAME/REPO.git
-```
-
----
-
-# Navigation Commands
-
-Current directory:
-
-```bash
-pwd
-```
-
-List files:
-
-```bash
-ls
-```
-
-List files in a folder:
-
-```bash
-ls rtl
-
-ls tb
-```
-
-Move into a folder:
-
-```bash
-cd folder_name
-```
-
-Move up one level:
-
-```bash
-cd ..
-```
-
----
-
-# Verilog Compilation
-
-Compile ALU and testbench:
+Compile:
 
 ```bash
 iverilog -o alu_test rtl/alu.v tb/alu_tb.v
 ```
 
-Explanation:
-
-* iverilog = Verilog compiler
-* -o alu_test = output executable
-* rtl/alu.v = design file
-* tb/alu_tb.v = testbench
-
----
-
-# Simulation
-
-Run simulation:
+Run:
 
 ```bash
 vvp alu_test
 ```
 
-Expected output:
+---
 
-```text
-ADD: 10 + 5 = 15
-SUB: 10 - 5 = 5
+## Register File
+
+Compile:
+
+```bash
+iverilog -o regfile_test rtl/register_file.v tb/register_file_tb.v
+```
+
+Run:
+
+```bash
+vvp regfile_test
 ```
 
 ---
 
-# Common Debug Commands
+## Instruction Memory
 
-Display file contents:
-
-```bash
-cat filename
-```
-
-Show line numbers:
+Compile:
 
 ```bash
-nl -ba filename
+iverilog -o imem_test rtl/instruction_memory.v tb/instruction_memory_tb.v
 ```
 
-Check Icarus Verilog installation:
+Run:
 
 ```bash
-iverilog -V
+vvp imem_test
 ```
 
-Check current directory:
+---
+
+# Typical Development Workflow
+
+Whenever implementing a new hardware module, follow this process:
+
+### 1. Open the project
 
 ```bash
-pwd
+cd ~/riscv_cpu
+
+code .
 ```
 
-Check project structure:
+### 2. Edit RTL
+
+Modify files in:
+
+```text
+rtl/
+```
+
+### 3. Edit Testbench
+
+Modify files in:
+
+```text
+tb/
+```
+
+### 4. Compile
+
+Example:
 
 ```bash
-ls
-
-ls rtl
-
-ls tb
+iverilog -o module_test rtl/module.v tb/module_tb.v
 ```
+
+### 5. Run Simulation
+
+```bash
+vvp module_test
+```
+
+### 6. Verify Output
+
+Check the terminal output and confirm the expected behavior.
+
+### 7. Commit Changes
+
+```bash
+git add .
+
+git commit -m "Describe the changes"
+
+git push
+```
+
+---
+
+# Verilog Naming Conventions
+
+## RTL Modules
+
+```text
+rtl/alu.v
+
+rtl/register_file.v
+
+rtl/instruction_memory.v
+```
+
+## Testbenches
+
+```text
+tb/alu_tb.v
+
+tb/register_file_tb.v
+
+tb/instruction_memory_tb.v
+```
+
+Executable simulation names:
+
+```text
+alu_test
+
+regfile_test
+
+imem_test
+```
+
+---
+
+# Common Verilog Syntax
+
+Continuous assignment:
+
+```verilog
+assign output_signal = input_signal;
+```
+
+Combinational logic:
+
+```verilog
+always @(*) begin
+
+end
+```
+
+Sequential logic:
+
+```verilog
+always @(posedge clk) begin
+
+end
+```
+
+Initialize values:
+
+```verilog
+initial begin
+
+end
+```
+
+Display values:
+
+```verilog
+$display("Value = %d", signal);
+```
+
+Display hexadecimal:
+
+```verilog
+$display("Instruction = %h", instruction);
+```
+
+Delay simulation:
+
+```verilog
+#10;
+```
+
+Finish simulation:
+
+```verilog
+$finish;
+```
+
+---
+
+# Useful Terminal Shortcuts
+
+Clear the terminal:
+
+```bash
+clear
+```
+
+or
+
+```bash
+Cmd + K
+```
+
+Show previous commands:
+
+```bash
+history
+```
+
+Search previous commands:
+
+```bash
+Ctrl + R
+```
+
+Remove a file:
+
+```bash
+rm filename
+```
+
+Remove a directory:
+
+```bash
+rm -r directory_name
+```
+
+---

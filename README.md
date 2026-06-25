@@ -30,11 +30,11 @@ The processor will eventually include:
 
 ## Current Status
 
-* [ ] ALU
-* [ ] Register File
+* [✅] ALU
+* [✅] Register File
+* [✅] Instruction Memory
+* [ ] Program Counter
 * [ ] Control Unit
-* [ ] Instruction Memory
 * [ ] Data Memory
 * [ ] Single-Cycle CPU
 * [ ] Pipeline
-* [ ] Final Documentation

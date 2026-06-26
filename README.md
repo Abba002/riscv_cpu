@@ -33,7 +33,7 @@ The processor will eventually include:
 * [✅] ALU
 * [✅] Register File
 * [✅] Instruction Memory
-* [ ] Program Counter
+* [✅] Program Counter
 * [ ] Control Unit
 * [ ] Data Memory
 * [ ] Single-Cycle CPU

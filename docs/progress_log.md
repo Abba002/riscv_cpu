@@ -1,5 +1,3 @@
-## Day 1
-
 ### ALU Implementation
 
 Implemented a 32-bit Arithmetic Logic Unit (ALU) in Verilog.
@@ -33,8 +31,6 @@ Example results:
 # Progress Log
 
 ---
-
-# Day 1
 
 ## Objectives
 

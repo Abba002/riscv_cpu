@@ -49,6 +49,18 @@ vvp imem_test
 ```
 
 ---
+## Program Counter
+
+Compile:
+
+```bash
+iverilog -o pc_test rtl/programcounter.v tb/program_counter_tb.v
+
+Run:
+
+vvp pc_test
+
+
 
 # Typical Development Workflow
 
@@ -118,6 +130,8 @@ rtl/alu.v
 rtl/register_file.v
 
 rtl/instruction_memory.v
+
+rtl/programcounter.v
 ```
 
 ## Testbenches
@@ -128,6 +142,8 @@ tb/alu_tb.v
 tb/register_file_tb.v
 
 tb/instruction_memory_tb.v
+
+tb/program_counter_tb.v
 ```
 
 Executable simulation names:
@@ -138,6 +154,8 @@ alu_test
 regfile_test
 
 imem_test
+
+pc_test
 ```
 
 ---
@@ -239,3 +257,12 @@ rm -r directory_name
 ```
 
 ---
+
+# Simulation Tips
+
+If the design is sequential:
+
+- Generate a clock using `always #5 clk = ~clk;`
+- Initialize the clock before simulation:
+  ```verilog
+  clk = 0;

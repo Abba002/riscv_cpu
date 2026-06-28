@@ -60,7 +60,14 @@ Run:
 
 vvp pc_test
 
+```bash
+## Program Counter
+iverilog -o control_test rtl/control_unit.v tb/control_unit_tb.v
 
+Run:
+vvp control_test
+
+vvp control_test
 
 # Typical Development Workflow
 
@@ -132,6 +139,8 @@ rtl/register_file.v
 rtl/instruction_memory.v
 
 rtl/programcounter.v
+
+rtl/control_unit.v
 ```
 
 ## Testbenches
@@ -144,6 +153,8 @@ tb/register_file_tb.v
 tb/instruction_memory_tb.v
 
 tb/program_counter_tb.v
+
+tb/control_unit_tb.v
 ```
 
 Executable simulation names:
@@ -156,6 +167,8 @@ regfile_test
 imem_test
 
 pc_test
+
+control_test
 ```
 
 ---
@@ -215,7 +228,17 @@ Finish simulation:
 ```verilog
 $finish;
 ```
+Concatenation:
 
+```verilog
+{signal_a, signal_b}
+```
+
+Example R-type instruction construction:
+
+```verilog
+instruction = {7'b0000000, 5'd2, 5'd1, 3'b000, 5'd5, 7'b0110011};
+```
 ---
 
 # Useful Terminal Shortcuts

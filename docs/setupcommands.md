@@ -69,6 +69,17 @@ vvp control_test
 
 vvp control_test
 
+## Data Memory
+
+Compile:
+
+```bash
+iverilog -o dmem_test rtl/data_memory.v tb/data_memory_tb.v
+
+Run:
+
+vvp dmem_test
+
 # Typical Development Workflow
 
 Whenever implementing a new hardware module, follow this process:
@@ -141,6 +152,8 @@ rtl/instruction_memory.v
 rtl/programcounter.v
 
 rtl/control_unit.v
+
+rtl/data_memory.v
 ```
 
 ## Testbenches
@@ -155,6 +168,8 @@ tb/instruction_memory_tb.v
 tb/program_counter_tb.v
 
 tb/control_unit_tb.v
+
+tb/data_memory_tb.v
 ```
 
 Executable simulation names:
@@ -169,6 +184,8 @@ imem_test
 pc_test
 
 control_test
+
+dmem_test
 ```
 
 ---

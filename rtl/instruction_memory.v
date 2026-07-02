@@ -35,9 +35,14 @@ reg [31:0] memory [0:255];
 
 // placeholder instructions
 initial begin
-    memory[0] = 32'hAAAAAAAA;
-    memory[1] = 32'hBBBBBBBB;
-    memory[2] = 32'hCCCCCCCC;
+      // ADD x5, x1, x2
+    memory[0] = 32'h002082B3;
+
+    // SUB x6, x5, x3
+    memory[1] = 32'h40328333;
+
+    // AND x7, x6, x4
+    memory[2] = 32'h004373B3;
 end
 
 

@@ -54,14 +54,14 @@ vvp imem_test
 Compile:
 
 ```bash
-iverilog -o pc_test rtl/programcounter.v tb/program_counter_tb.v
+iverilog -o pc_test rtl/program_counter.v tb/program_counter_tb.v
 
 Run:
 
 vvp pc_test
 
 ```bash
-## Program Counter
+## Control Unit
 iverilog -o control_test rtl/control_unit.v tb/control_unit_tb.v
 
 Run:
@@ -79,6 +79,18 @@ iverilog -o dmem_test rtl/data_memory.v tb/data_memory_tb.v
 Run:
 
 vvp dmem_test
+
+```markdown
+## Top-Level CPU
+
+Compile:
+
+```bash
+iverilog -o cpu_test rtl/riscv_cpu.v rtl/program_counter.v rtl/instruction_memory.v rtl/control_unit.v rtl/register_file.v rtl/alu.v tb/riscv_cpu_tb.v
+
+Run:
+
+vvp cpu_test
 
 # Typical Development Workflow
 
@@ -154,6 +166,8 @@ rtl/programcounter.v
 rtl/control_unit.v
 
 rtl/data_memory.v
+
+rtl/riscv_cpu.v
 ```
 
 ## Testbenches
@@ -170,6 +184,8 @@ tb/program_counter_tb.v
 tb/control_unit_tb.v
 
 tb/data_memory_tb.v
+
+tb/riscv_cpu_tb.v
 ```
 
 Executable simulation names:
@@ -186,6 +202,8 @@ pc_test
 control_test
 
 dmem_test
+
+cpu_test
 ```
 
 ---

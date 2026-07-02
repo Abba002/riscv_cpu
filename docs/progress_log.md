@@ -317,3 +317,74 @@ Verified:
 - Memory write enable signals
 - Byte addressing vs. word indexing
 - Preventing accidental writes by deasserting `mem_write`
+
+---
+
+# Top-Level CPU Integration
+
+## Objectives
+
+- Integrate the major processor modules into a single top-level CPU
+- Connect instruction fetch, decode, register read, ALU execution, and write-back
+- Verify execution of R-type RISC-V instructions
+
+---
+
+## CPU Integration
+
+Implemented the top-level `riscv_cpu` module.
+
+Integrated modules:
+
+- Program Counter
+- Instruction Memory
+- Control Unit
+- Register File
+- ALU
+
+The current CPU supports execution of R-type arithmetic/logic instructions.
+
+### Supported Instruction Flow
+
+1. Program Counter outputs the current instruction address
+2. Instruction Memory returns the instruction
+3. Control Unit decodes the instruction
+4. Register File reads source operands
+5. ALU executes the operation
+6. ALU result is written back to the destination register
+
+---
+
+## CPU Verification
+
+Created `riscv_cpu_tb.v` to verify integrated datapath behavior.
+
+Test program:
+
+```assembly
+ADD x5, x1, x2
+SUB x6, x5, x3
+AND x7, x6, x4
+
+Simulation verified:
+
+ADD: 10 + 5 = 15
+SUB: 15 - 20 = -5
+AND: -5 & 3 = 3
+
+This confirmed:
+
+Instruction fetch works
+Instruction decode works
+Register reads work
+ALU execution works
+Register write-back works
+Data dependencies between instructions work correctly
+Concepts Learned
+Top-level CPU integration
+Datapath wiring
+Debug signal exposure
+Instruction execution flow
+Register write-back
+Data dependencies
+Integration testing

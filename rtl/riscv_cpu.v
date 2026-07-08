@@ -45,7 +45,7 @@ module riscv_cpu(
 );
     wire reg_write;
     wire [2:0] alu_control;
-
+    wire alu_src;
     wire [31:0] write_data;
 
     program_counter pc_inst(
@@ -62,7 +62,8 @@ module riscv_cpu(
     control_unit cu_inst(
         .instruction(instruction),
         .reg_write(reg_write),
-        .alu_control(alu_control)
+        .alu_control(alu_control),
+        .alu_src(alu_src)
     );
 
     wire [4:0] rs1;
@@ -84,12 +85,21 @@ module riscv_cpu(
         .read_data2(read_data2)
     );
 
+    wire [31:0] immediate;
+    wire [31:0] alu_input_b;
+
+    immediate_generator imm_gen_inst (
+    .instruction(instruction),
+    .immediate(immediate)
+    );
+
     alu alu_inst(
         .a(read_data1),
-        .b(read_data2),
+        .b(alu_input_b),
         .alu_control(alu_control),
         .result(alu_result)
     );
-
+    
+    assign alu_input_b = alu_src ? immediate : read_data2;
     assign write_data = alu_result;
 endmodule

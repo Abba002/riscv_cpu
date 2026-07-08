@@ -2,13 +2,14 @@
 This module decodes a 32-bit RISC-V instruction and generates the
 control signals required by the processor.
 
-Currently, the Control Unit supports only R-type arithmetic instructions:
+Currently, the Control Unit supports only R-type and I-Type arithmetic instructions:
 
 - ADD
 - SUB
 - AND
 - OR
 - XOR
+- ADDI
 
 The opcode identifies the instruction type, while the funct3 and funct7
 fields determine the specific ALU operation.
@@ -28,7 +29,8 @@ Notes:
 module control_unit(
     input [31:0] instruction,
     output reg reg_write,
-    output reg [2:0] alu_control
+    output reg [2:0] alu_control,
+    output reg alu_src
 );
 
 wire [6:0] opcode;
@@ -42,6 +44,7 @@ assign funct7 = instruction[31:25];
     always @(*) begin
         alu_control = 3'b000;
         reg_write = 1'b0;
+        alu_src = 1'b0;
 
         case(opcode)
             7'b0110011: begin //R-type instruction
@@ -54,6 +57,13 @@ assign funct7 = instruction[31:25];
                     10'b0000000100: alu_control = 3'b100; //xor
                 endcase
             end
+            7'b0010011: begin  // I-type instruction
+                reg_write = 1'b1;
+                alu_src = 1'b1;
+                case(funct3)
+                    3'b000: alu_control = 3'b000; // ADDI
+                endcase
+            end
         endcase
     end
 endmodule
@@ -64,6 +74,5 @@ Future Work:
 - Store instructions
 - Branch instructions
 - Jump instructions
-- Immediate arithmetic instructions
 - Additional control signals (mem_read, mem_write, branch, jump, alu_src)
 */

@@ -29,11 +29,13 @@ module control_unit_tb;
     reg  [31:0] instruction;
     wire        reg_write;
     wire [2:0]  alu_control;
+    wire        alu_src;
 
     control_unit dut (
         .instruction(instruction),
         .reg_write(reg_write),
-        .alu_control(alu_control)
+        .alu_control(alu_control),
+        .alu_src(alu_src)
     );
 
     initial begin
@@ -61,6 +63,11 @@ module control_unit_tb;
         instruction = {7'b0000000, 5'd2, 5'd1, 3'b100, 5'd5, 7'b0110011};
         #10;
         $display("XOR: reg_write = %b, alu_control = %b", reg_write, alu_control);
+
+        // ADDI x5, x1, 10
+        instruction = {12'd10, 5'd1, 3'b000, 5'd5, 7'b0010011};
+        #10;
+        $display("ADDI: reg_write = %b, alu_src = %b, alu_control = %b", reg_write, alu_src, alu_control);
         $finish;
     end
 

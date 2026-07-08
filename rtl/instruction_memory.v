@@ -36,17 +36,30 @@ reg [31:0] memory [0:255];
 // placeholder instructions
 initial begin
 
-      // ADDI x5, x1, 10
+    // ADDI x5, x1, 10
+    // x5 = 10 + 10 = 20
     memory[0] = 32'h00A08293;
 
-      // ADD x5, x1, x2
+    // ANDI x6, x5, 15
+    // x6 = 20 & 15 = 4
+    memory[1] = 32'h00F2F313;
+
+    // ORI x7, x6, 8
+    // x7 = 4 | 8 = 12
+    memory[2] = 32'h00836393;
+
+    // XORI x8, x7, 3
+    // x8 = 12 ^ 3 = 15
+    memory[3] = 32'h0033C413;
+
+    // ADD x5, x1, x2
     //memory[0] = 32'h002082B3;
 
     // SUB x6, x5, x3
-    memory[1] = 32'h40328333;
+    //memory[1] = 32'h40328333;
 
     // AND x7, x6, x4
-    memory[2] = 32'h004373B3;
+    //memory[2] = 32'h004373B3;
 end
 
 

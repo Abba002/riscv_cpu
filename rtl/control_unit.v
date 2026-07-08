@@ -2,14 +2,20 @@
 This module decodes a 32-bit RISC-V instruction and generates the
 control signals required by the processor.
 
-Currently, the Control Unit supports only R-type and I-Type arithmetic instructions:
+Currently, the Control Unit supports:
 
-- ADD
-- SUB
-- AND
-- OR
-- XOR
-- ADDI
+- R-type arithmetic instructions
+    • ADD
+    • SUB
+    • AND
+    • OR
+    • XOR
+
+- I-type arithmetic instructions
+    • ADDI
+    • ANDI
+    • ORI
+    • XORI
 
 The opcode identifies the instruction type, while the funct3 and funct7
 fields determine the specific ALU operation.
@@ -17,9 +23,11 @@ fields determine the specific ALU operation.
 Inputs:
 instruction     32-bit RISC-V instruction
 
-Outputs:
-reg_write       Enables writing the ALU result back to the Register File
-alu_control     Selects the ALU operation
+reg_write      Enables writing to the Register File
+alu_control    Selects the ALU operation
+alu_src        Selects the ALU second operand
+               0 = Register File
+               1 = Immediate Generator
 
 Notes:
 - Combinational logic (no clock required)
@@ -62,6 +70,10 @@ assign funct7 = instruction[31:25];
                 alu_src = 1'b1;
                 case(funct3)
                     3'b000: alu_control = 3'b000; // ADDI
+                    3'b111: alu_control = 3'b010; // ANDI
+                    3'b110: alu_control = 3'b011; // ORI
+                    3'b100: alu_control = 3'b100; // XORI
+
                 endcase
             end
         endcase
@@ -70,9 +82,14 @@ endmodule
 
 /*
 Future Work:
-- Load instructions
-- Store instructions
-- Branch instructions
-- Jump instructions
-- Additional control signals (mem_read, mem_write, branch, jump, alu_src)
+- Load instructions (LW)
+- Store instructions (SW)
+- Branch instructions (BEQ, BNE)
+- Jump instructions (JAL, JALR)
+- Additional control signals
+    • mem_read
+    • mem_write
+    • mem_to_reg
+    • branch
+    • jump
 */

@@ -80,13 +80,29 @@ Run:
 
 vvp dmem_test
 
+### Immediate Generator
+
+Compile:
+
+```bash
+iverilog -o immediate_test rtl/immediate_generator.v tb/immediate_generator_tb.v
+
 ```markdown
+
 ## Top-Level CPU
 
 Compile:
 
 ```bash
-iverilog -o cpu_test rtl/riscv_cpu.v rtl/program_counter.v rtl/instruction_memory.v rtl/control_unit.v rtl/register_file.v rtl/alu.v tb/riscv_cpu_tb.v
+iverilog -o cpu_test \
+rtl/riscv_cpu.v \
+rtl/program_counter.v \
+rtl/instruction_memory.v \
+rtl/control_unit.v \
+rtl/register_file.v \
+rtl/immediate_generator.v \
+rtl/alu.v \
+tb/riscv_cpu_tb.v
 
 Run:
 
@@ -168,6 +184,8 @@ rtl/control_unit.v
 rtl/data_memory.v
 
 rtl/riscv_cpu.v
+
+rtl/immediate_generator.v
 ```
 
 ## Testbenches
@@ -186,6 +204,8 @@ tb/control_unit_tb.v
 tb/data_memory_tb.v
 
 tb/riscv_cpu_tb.v
+
+tb/immediate_generator_tb.v
 ```
 
 Executable simulation names:

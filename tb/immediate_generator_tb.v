@@ -1,5 +1,20 @@
 `timescale 1ns/1ps
+/*
+-----------------------------------------------------------------------------
+Module: Immediate Generator Testbench
+Project: 32-bit RISC-V Processor
 
+Description:
+This testbench verifies that the Immediate Generator correctly extracts
+and sign-extends immediate values from I-type instructions.
+
+The following cases are tested:
+
+1. Positive immediate value
+2. Negative immediate value
+
+-----------------------------------------------------------------------------
+*/
 module immediate_generator_tb;
     reg [31:0] instruction;
     wire [31:0] immediate;

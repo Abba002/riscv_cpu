@@ -388,3 +388,104 @@ Instruction execution flow
 Register write-back
 Data dependencies
 Integration testing
+
+---
+
+# Immediate Instruction Support
+
+## Objectives
+
+- Implement support for I-type arithmetic instructions
+- Add an Immediate Generator
+- Add ALU source selection
+- Integrate immediate instructions into the CPU datapath
+
+---
+
+## Immediate Generator
+
+Implemented the `immediate_generator` module.
+
+Features:
+
+- Extracts the 12-bit immediate from I-type instructions
+- Sign-extends the immediate to 32 bits
+- Pure combinational logic
+
+Verified operation using:
+
+- Positive immediate values
+- Negative immediate values
+
+---
+
+## Control Unit Updates
+
+Expanded the Control Unit to support I-type arithmetic instructions.
+
+Added control signal:
+
+- `alu_src`
+
+`alu_src` selects the second ALU operand:
+
+- `0` → Register File (`read_data2`)
+- `1` → Immediate Generator output
+
+Added support for:
+
+- ADDI
+- ANDI
+- ORI
+- XORI
+
+---
+
+## CPU Datapath Updates
+
+Integrated the Immediate Generator into the processor.
+
+Added:
+
+- Immediate Generator
+- ALU input multiplexer
+- `alu_src` control signal
+
+The ALU now selects between:
+
+- Register operand
+- Immediate operand
+
+---
+
+## CPU Verification
+
+Verified execution of I-type instructions.
+
+Instruction sequence:
+
+```assembly
+ADDI x5, x1, 10
+ANDI x6, x5, 15
+ORI  x7, x6, 8
+XORI x8, x7, 3
+```
+
+Simulation confirmed:
+
+- Immediate extraction
+- Correct sign extension
+- ALU operand selection
+- Register write-back
+- Data dependency between instructions
+
+---
+
+## Concepts Learned
+
+- I-type instruction format
+- Immediate generation
+- Sign extension
+- Datapath multiplexing
+- ALU source selection
+- Extending processor functionality without modifying the datapath

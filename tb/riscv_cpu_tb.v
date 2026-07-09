@@ -31,7 +31,7 @@ module riscv_cpu_tb;
     wire [31:0] instruction;
     wire [31:0] alu_result;
     wire [31:0] read_data1;
-    wire [31:0] read_data2;
+    wire [31:0] alu_input_b;
 
     riscv_cpu dut(
         .clk(clk),
@@ -40,7 +40,7 @@ module riscv_cpu_tb;
         .instruction(instruction),
         .alu_result(alu_result),
         .read_data1(read_data1),
-        .read_data2(read_data2)
+        .alu_input_b(alu_input_b)
     );
 
     always #5 clk = ~clk;
@@ -53,16 +53,16 @@ module riscv_cpu_tb;
         reset = 0;
 
         #1;
-        $display("PC=%d | Instruction=%h | A=%d | B=%d | ALU result=%d", pc, instruction,$signed(read_data1),$signed(read_data2),$signed(alu_result));
+        $display("PC=%d | Instruction=%h | A=%d | B=%d | ALU result=%d", pc, instruction,$signed(read_data1),$signed(alu_input_b),$signed(alu_result));
 
         #10;
-        $display("PC=%d | Instruction=%h | A=%d | B=%d | ALU result=%d", pc, instruction,$signed(read_data1),$signed(read_data2),$signed(alu_result));
+        $display("PC=%d | Instruction=%h | A=%d | B=%d | ALU result=%d", pc, instruction,$signed(read_data1),$signed(alu_input_b),$signed(alu_result));
         
         #10;
-        $display("PC=%d | Instruction=%h | A=%d | B=%d | ALU result=%d", pc, instruction,$signed(read_data1),$signed(read_data2),$signed(alu_result));
+        $display("PC=%d | Instruction=%h | A=%d | B=%d | ALU result=%d", pc, instruction,$signed(read_data1),$signed(alu_input_b),$signed(alu_result));
         
         #10;
-        $display("PC=%d | Instruction=%h | A=%d | B=%d | ALU result=%d", pc, instruction,$signed(read_data1),$signed(read_data2),$signed(alu_result));
+        $display("PC=%d | Instruction=%h | A=%d | B=%d | ALU result=%d", pc, instruction,$signed(read_data1),$signed(alu_input_b),$signed(alu_result));
         $finish;    
     end
 

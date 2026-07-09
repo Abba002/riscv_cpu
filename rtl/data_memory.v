@@ -45,4 +45,10 @@ module data_memory(
         if(mem_write)
             memory[address[31:2]] <= write_data;
     end
+
+    initial begin
+        memory[0] = 32'd100;
+        memory[1] = 32'd42;
+        memory[2] = 32'd99;
+    end
 endmodule

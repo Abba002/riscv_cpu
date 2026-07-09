@@ -38,19 +38,19 @@ initial begin
 
     // ADDI x5, x1, 10
     // x5 = 10 + 10 = 20
-    memory[0] = 32'h00A08293;
+    //memory[0] = 32'h00A08293;
 
     // ANDI x6, x5, 15
     // x6 = 20 & 15 = 4
-    memory[1] = 32'h00F2F313;
+    //memory[1] = 32'h00F2F313;
 
     // ORI x7, x6, 8
     // x7 = 4 | 8 = 12
-    memory[2] = 32'h00836393;
+    //memory[2] = 32'h00836393;
 
     // XORI x8, x7, 3
     // x8 = 12 ^ 3 = 15
-    memory[3] = 32'h0033C413;
+    //memory[3] = 32'h0033C413;
 
     // ADD x5, x1, x2
     //memory[0] = 32'h002082B3;
@@ -60,6 +60,22 @@ initial begin
 
     // AND x7, x6, x4
     //memory[2] = 32'h004373B3;
+
+    // LW x5, 4(x0)
+    // x5 = memory[0] = 42
+    memory[0] = 32'h00402283;
+
+    // SW x5, 8(x0)
+    // memory[1] = x5 = 77
+    memory[1] = 32'h00502423;
+
+    // LW x6, 8(x0)
+    // x6 = memory[2], should be 42 if SW worked
+    memory[2] = 32'h00802303;
+
+    // ADDI x7, x6, 5
+    // x7 = 42 + 5 = 47
+    memory[3] = 32'h00530393;
 end
 
 

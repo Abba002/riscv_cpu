@@ -16,10 +16,14 @@ The CPU performs the following operations:
 5. Writes the ALU result back to the Register File
 
 Current Features:
-- R-type instruction execution
+
+- Sequential instruction fetch
+- R-type arithmetic instructions
+- I-type arithmetic instructions
+- Load Word (LW)
+- Store Word (SW)
 - Register write-back
-- Sequential Program Counter
-- Instruction fetch and decode
+- Data memory access
 
 Inputs:
 clk         System clock
@@ -41,12 +45,18 @@ module riscv_cpu(
     output [31:0] instruction,
     output [31:0] alu_result,
     output [31:0] read_data1,
-    output [31:0] read_data2
+    output [31:0] alu_input_b
 );
     wire reg_write;
     wire [2:0] alu_control;
     wire alu_src;
+    wire mem_to_reg;
+    wire mem_write;
+
     wire [31:0] write_data;
+    wire [31:0] memory_read_data;
+    wire [31:0] immediate;
+    wire [31:0] read_data2;
 
     program_counter pc_inst(
         .clk(clk),
@@ -63,7 +73,9 @@ module riscv_cpu(
         .instruction(instruction),
         .reg_write(reg_write),
         .alu_control(alu_control),
-        .alu_src(alu_src)
+        .alu_src(alu_src),
+        .mem_to_reg(mem_to_reg),
+        .mem_write(mem_write)
     );
 
     wire [4:0] rs1;
@@ -85,9 +97,6 @@ module riscv_cpu(
         .read_data2(read_data2)
     );
 
-    wire [31:0] immediate;
-    wire [31:0] alu_input_b;
-
     immediate_generator imm_gen_inst (
     .instruction(instruction),
     .immediate(immediate)
@@ -99,7 +108,16 @@ module riscv_cpu(
         .alu_control(alu_control),
         .result(alu_result)
     );
+
+    data_memory dm_inst(
+        .clk(clk),
+        .mem_write(mem_write),
+        .address(alu_result),
+        .write_data(read_data2),
+        .read_data(memory_read_data)
+    );
     
     assign alu_input_b = alu_src ? immediate : read_data2;
-    assign write_data = alu_result;
+
+    assign write_data = mem_to_reg ? memory_read_data : alu_result; //write back mux for LW
 endmodule

@@ -489,3 +489,91 @@ Simulation confirmed:
 - Datapath multiplexing
 - ALU source selection
 - Extending processor functionality without modifying the datapath
+
+---
+
+# Load and Store Instruction Support
+
+## Objectives
+
+- Add support for memory access instructions
+- Integrate Data Memory into the CPU datapath
+- Implement Register File write-back from memory
+- Verify both load and store behavior
+
+---
+
+## Control Unit Updates
+
+Expanded the Control Unit to support memory instructions:
+
+- LW
+- SW
+
+Added memory control signals:
+
+- `mem_to_reg`
+- `mem_write`
+
+Control behavior:
+
+| Instruction | `reg_write` | `alu_src` | `mem_to_reg` | `mem_write` |
+|------------|-------------|-----------|--------------|-------------|
+| LW | 1 | 1 | 1 | 0 |
+| SW | 0 | 1 | 0 | 1 |
+
+---
+
+## Immediate Generator Updates
+
+Expanded the Immediate Generator to support:
+
+- I-type immediates for arithmetic and load instructions
+- S-type immediates for store instructions
+
+This allowed the CPU to calculate memory addresses for both `LW` and `SW`.
+
+---
+
+## CPU Datapath Updates
+
+Integrated Data Memory into the top-level CPU.
+
+Added:
+
+- Data Memory connection
+- Write-back multiplexer
+- Memory control signals
+
+The write-back path now selects between:
+
+- ALU result
+- Data Memory output
+
+---
+
+## CPU Verification
+
+Verified memory instruction execution using a store/load sequence.
+
+Test sequence:
+
+```assembly
+LW   x5, 4(x0)
+SW   x5, 8(x0)
+LW   x6, 8(x0)
+ADDI x7, x6, 5
+Simulation confirmed:
+
+LW successfully loaded data from Data Memory
+SW successfully stored register data into Data Memory
+A later LW successfully retrieved the stored value
+The loaded value was used correctly by a following arithmetic instruction
+Concepts Learned
+Load/store architecture
+Memory address calculation using the ALU
+Data Memory integration
+Write-back multiplexing
+Memory write enable control
+S-type immediate extraction
+Full memory datapath verification

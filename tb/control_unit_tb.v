@@ -9,6 +9,7 @@ This testbench verifies that the Control Unit correctly decodes:
 
 - R-type arithmetic instructions
 - I-type arithmetic instructions
+- Memory instructions
 
 The following instructions are tested:
 
@@ -25,10 +26,15 @@ I-type
 8. ORI
 9. XORI
 
+Memory
+10. LW
+11. SW
+
 For each instruction, the testbench verifies:
 
 - Register write enable
 - ALU source selection
+- Memory control signals
 - ALU control output
 
 -----------------------------------------------------------------------------
@@ -40,12 +46,16 @@ module control_unit_tb;
     wire        reg_write;
     wire [2:0]  alu_control;
     wire        alu_src;
+    wire        mem_write;
+    wire        mem_to_reg;
 
     control_unit dut (
         .instruction(instruction),
         .reg_write(reg_write),
         .alu_control(alu_control),
-        .alu_src(alu_src)
+        .alu_src(alu_src),
+        .mem_write(mem_write),
+        .mem_to_reg(mem_to_reg)
     );
 
     initial begin
@@ -94,6 +104,17 @@ module control_unit_tb;
         #10;
         $display("XORI: reg_write = %b, alu_src = %b, alu_control = %b", reg_write, alu_src, alu_control);
         $finish;
+
+        // LW
+        instruction = {12'd8, 5'd1, 3'b010, 5'd5, 7'b0000011};
+        #10;
+        $display("LW: reg_write = %b, alu_src = %b, mem_to_reg = %b, mem_write = %b, alu_control = %b", reg_write, alu_src, mem_to_reg, mem_write, alu_control);
+
+        // SW x5, 8(x1)
+        instruction = {7'b0000000, 5'd5, 5'd1, 3'b010, 5'b01000, 7'b0100011};
+        #10;
+        $display("SW: reg_write = %b, alu_src = %b, mem_to_reg = %b, mem_write = %b, alu_control = %b", reg_write, alu_src, mem_to_reg, mem_write, alu_control);
+    
     end
 
 endmodule

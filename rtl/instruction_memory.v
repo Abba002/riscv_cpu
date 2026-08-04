@@ -76,25 +76,42 @@ initial begin
     // ADDI x7, x6, 5
     // x7 = 42 + 5 = 47
     //memory[3] = 32'h00530393;
-
+    
+    // BEQ sequence
     // ADDI x1, x0, 5
     // x1 = 5
-    memory[0] = 32'h00500093;
+    //memory[0] = 32'h00500093;
 
     // ADDI x2, x0, 5
     // x2 = 5
-    memory[1] = 32'h00500113;
+    //memory[1] = 32'h00500113;
 
     // BEQ x1, x2, +8
     // Since x1 == x2, skip memory[3] and branch to memory[4]
-    memory[2] = 32'h00208463;
+    //memory[2] = 32'h00208463;
 
     // ADDI x3, x0, 99
     // This instruction should be skipped
-    memory[3] = 32'h06300193;
+    //memory[3] = 32'h06300193;
 
     // ADDI x3, x0, 42
     // This instruction should execute
+    //memory[4] = 32'h02A00193;
+
+    //BNE sequence
+    // ADDI x1, x0, 5
+    memory[0] = 32'h00500093;
+
+    // ADDI x2, x0, 6
+    memory[1] = 32'h00600113;
+
+    // BNE x1, x2, +8
+    memory[2] = 32'h00209463;
+
+    // Should be skipped
+    memory[3] = 32'h06300193;
+
+    // Should execute
     memory[4] = 32'h02A00193;
 end
 

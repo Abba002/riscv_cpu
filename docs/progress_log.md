@@ -731,3 +731,123 @@ Next-PC multiplexing
 Separating PC storage from next-address calculation
 Verifying both outcomes of a conditional instruction
 
+---
+
+# Additional Branch Instruction Support
+
+## Objectives
+
+- Expand branch support beyond `BEQ`
+- Implement the `BNE` instruction
+- Improve branch control logic for multiple branch types
+- Verify both branch-taken and branch-not-taken execution
+
+---
+
+## Control Unit Updates
+
+Replaced the single `branch` control signal with:
+
+- `branch_control`
+
+Branch control encoding:
+
+| Value | Instruction |
+|--------|-------------|
+| `00` | No branch |
+| `01` | BEQ |
+| `10` | BNE |
+
+This design allows additional branch instructions to be added without changing the processor datapath.
+
+---
+
+## CPU Datapath Updates
+
+Added branch decision logic:
+
+```verilog
+assign branch_taken =
+       ((branch_control == 2'b01) && zero) ||
+       ((branch_control == 2'b10) && !zero);
+```
+
+The next Program Counter value is selected as:
+
+```text
+Branch Taken:
+    PC + immediate
+
+Otherwise:
+    PC + 4
+```
+
+---
+
+## Control Unit Verification
+
+Verified decoding for:
+
+- BEQ
+- BNE
+
+Confirmed:
+
+- Correct branch control output
+- Correct ALU operation selection (SUB)
+
+---
+
+## CPU Verification
+
+### BNE Branch Taken
+
+Program:
+
+```assembly
+ADDI x1, x0, 5
+ADDI x2, x0, 6
+BNE  x1, x2, +8
+ADDI x3, x0, 99
+ADDI x3, x0, 42
+```
+
+Observed PC sequence:
+
+```text
+0 → 4 → 8 → 16
+```
+
+Instruction at PC = 12 was skipped.
+
+---
+
+### BNE Branch Not Taken
+
+Program:
+
+```assembly
+ADDI x1, x0, 5
+ADDI x2, x0, 5
+BNE  x1, x2, +8
+ADDI x3, x0, 99
+ADDI x3, x0, 42
+```
+
+Observed PC sequence:
+
+```text
+0 → 4 → 8 → 12 → 16
+```
+
+The processor continued sequentially because the registers were equal.
+
+---
+
+## Concepts Learned
+
+- Multiple branch instruction support
+- Branch control encoding
+- Branch decision logic
+- Reusable control architecture
+- Conditional Program Counter selection

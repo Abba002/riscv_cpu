@@ -67,7 +67,6 @@ endmodule
 
 /*
 Future Work:
-- Support B-type immediates (BNE)
 - Support U-type immediates (LUI, AUIPC)
 - Support J-type immediates (JAL)
 */

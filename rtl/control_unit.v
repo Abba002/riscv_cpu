@@ -23,6 +23,7 @@ Currently, the Control Unit supports:
 
 Branch Instructions
     • BEQ
+    • BNE
 
 The opcode identifies the instruction type, while the funct3 and funct7
 fields determine the specific ALU operation.
@@ -44,7 +45,11 @@ mem_to_reg     Selects Register File write-back source
 
 mem_write      Enables writing to Data Memory
 
-branch         Enables branch evaluation
+branch_control Selects the branch operation
+
+               00 = No branch
+               01 = BEQ
+               10 = BNE
 
 Notes:
 - Combinational logic (no clock required)
@@ -58,7 +63,7 @@ module control_unit(
     output reg alu_src,
     output reg mem_to_reg,
     output reg mem_write,
-    output reg branch
+    output reg [1:0] branch_control
 );
 
 wire [6:0] opcode;
@@ -75,7 +80,7 @@ assign funct7 = instruction[31:25];
         alu_src = 1'b0;
         mem_write = 1'b0;
         mem_to_reg = 1'b0;
-        branch = 1'b0;
+        branch_control = 2'b00;
 
         case(opcode)
 
@@ -117,13 +122,17 @@ assign funct7 = instruction[31:25];
                     alu_control = 3'b000; // ADD address = base + offset
             end
 
-            7'b1100011: begin //BEQ
+            7'b1100011: begin //Branch Instructions
                     reg_write  = 1'b0;
                     alu_src    = 1'b0;
                     mem_to_reg = 1'b0;
                     mem_write  = 1'b0;
-                    branch     = 1'b1;
-                    alu_control= 3'b001; //SUB
+                    alu_control= 3'b001; //compare registers using subtraction
+
+                    case(funct3)
+                        3'b000: branch_control = 2'b01; // BEQ
+                        3'b001: branch_control = 2'b10; // BNE
+                    endcase
             end
         endcase
     end
@@ -131,7 +140,6 @@ endmodule
 
 /*
 Future Work:
-- Branch instructions (BNE)
 - Jump instructions (JAL, JALR)
 - Additional control signals
     • jump

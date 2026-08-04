@@ -63,7 +63,8 @@ module riscv_cpu(
 
     wire [31:0] next_pc;
     wire zero;
-    wire branch;
+    wire [1:0] branch_control;
+    wire branch_taken;
 
     program_counter pc_inst(
         .clk(clk),
@@ -84,7 +85,7 @@ module riscv_cpu(
         .alu_src(alu_src),
         .mem_to_reg(mem_to_reg),
         .mem_write(mem_write),
-        .branch(branch)
+        .branch_control(branch_control)
     );
 
     wire [4:0] rs1;
@@ -131,6 +132,8 @@ module riscv_cpu(
 
     assign write_data = mem_to_reg ? memory_read_data : alu_result; //write back mux for LW
 
-    assign next_pc = (branch && zero) ? (pc + immediate) : (pc + 32'd4); // compute the next program counter
+    assign branch_taken = ((branch_control == 2'b01) && zero) || ((branch_control == 2'b10) && !zero);
+
+    assign next_pc = branch_taken ? (pc + immediate) : (pc + 32'd4); // compute the next program counter
 
 endmodule

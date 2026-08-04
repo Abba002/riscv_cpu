@@ -33,6 +33,7 @@ Memory
 
 Branch
 12. BEQ
+13. BNE
 
 For each instruction, the testbench verifies:
 
@@ -53,6 +54,7 @@ module control_unit_tb;
     wire        alu_src;
     wire        mem_write;
     wire        mem_to_reg;
+    wire [1:0] branch_control;
 
     control_unit dut (
         .instruction(instruction),
@@ -60,7 +62,8 @@ module control_unit_tb;
         .alu_control(alu_control),
         .alu_src(alu_src),
         .mem_write(mem_write),
-        .mem_to_reg(mem_to_reg)
+        .mem_to_reg(mem_to_reg),
+        .branch_control(branch_control)
     );
 
     initial begin
@@ -108,7 +111,6 @@ module control_unit_tb;
         instruction = {12'd10, 5'd1, 3'b100, 5'd5, 7'b0010011};
         #10;
         $display("XORI: reg_write = %b, alu_src = %b, alu_control = %b", reg_write, alu_src, alu_control);
-        $finish;
 
         // LW
         instruction = {12'd8, 5'd1, 3'b010, 5'd5, 7'b0000011};
@@ -120,6 +122,17 @@ module control_unit_tb;
         #10;
         $display("SW: reg_write = %b, alu_src = %b, mem_to_reg = %b, mem_write = %b, alu_control = %b", reg_write, alu_src, mem_to_reg, mem_write, alu_control);
     
+        // BEQ x1, x2, +8
+        instruction = {1'b0, 6'b000000, 5'd2, 5'd1, 3'b000, 4'b0100, 1'b0, 7'b1100011};
+        #10;
+        $display("BEQ: branch_control = %b, alu_control = %b", branch_control, alu_control);
+
+        // BNE x1, x2, +8
+        instruction = {1'b0, 6'b000000, 5'd2, 5'd1, 3'b001, 4'b0100, 1'b0, 7'b1100011};
+        #10;
+        $display("BNE: branch_control = %b, alu_control = %b", branch_control, alu_control);
+
+        $finish;
     end
 
 endmodule

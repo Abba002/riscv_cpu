@@ -19,6 +19,9 @@ Currently, the Immediate Generator supports:
 - S-type immediates
     • SW
 
+- B-type immediates
+    • BEQ
+
 For I-type instructions, the immediate value is stored in bits [31:20]
 of the instruction and is sign-extended to 32 bits.
 
@@ -30,7 +33,7 @@ immediate       32-bit sign-extended immediate value
 
 Notes:
 - Combinational logic (no clock required)
-- Supports I-type and S-type immediates
+- Supports I-type, S-type snd B-type immediates
 -----------------------------------------------------------------------------
 */
 module immediate_generator (
@@ -51,6 +54,9 @@ module immediate_generator (
             7'b0100011: // SW
                 immediate = {{20{instruction[31]}}, instruction[31:25], instruction[11:7]};
 
+            7'b1100011: // B-type Instructions
+                immediate = {{19{instruction[31]}}, instruction[31], instruction[7], instruction[30:25], instruction[11:8], 1'b0}; 
+
             default:
                 immediate = 32'd0;
 
@@ -61,7 +67,7 @@ endmodule
 
 /*
 Future Work:
-- Support B-type immediates (BEQ, BNE)
+- Support B-type immediates (BNE)
 - Support U-type immediates (LUI, AUIPC)
 - Support J-type immediates (JAL)
 */

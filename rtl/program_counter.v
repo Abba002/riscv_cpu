@@ -4,34 +4,39 @@ Module: Program Counter
 Project: 32-bit RISC-V Processor
 
 Description:
-This module implements the Program Counter (PC) for the processor.
+Stores the current Program Counter (PC).
 
-The Program Counter stores the address of the current instruction being
-executed. On every positive clock edge, the PC normally increments by
-4 bytes to point to the next instruction. If reset is asserted, the PC
-returns to address 0 so execution begins from the start of the program.
+The next PC value is supplied by the CPU datapath,
+allowing support for:
+
+- Sequential execution (PC + 4)
+- Branch instructions
+- Future jump instructions
 
 Inputs:
-clk     System clock
-reset   Resets the Program Counter to address 0
+clk         System clock
+reset       Resets the Program Counter to address 0
+next_pc     Next Program Counter value
 
 Outputs:
 pc      Current Program Counter value (instruction address)
 
 Notes:
-- Sequential logic (updates on positive clock edge)
-- Instructions are 32 bits (4 bytes), so the PC increments by 4
+- Sequential logic
+- Loads the next PC value on each rising clock edge
 -----------------------------------------------------------------------------
 */
 module program_counter (
     input clk,
     input reset,
+    input [31:0] next_pc,
     output reg [31:0] pc
 );
     always @(posedge clk) begin
         if (reset)
             pc <= 32'd0;
         else
-            pc <= pc + 32'd4;
+            //pc <= pc + 32'd4;
+            pc <= next_pc;
     end
 endmodule

@@ -128,6 +128,25 @@ Run:
 
 vvp cpu_test
 
+## Top-Level CPU with Branch Support
+
+Compile:
+
+```bash
+iverilog -o cpu_test \
+rtl/riscv_cpu.v \
+rtl/program_counter.v \
+rtl/instruction_memory.v \
+rtl/control_unit.v \
+rtl/register_file.v \
+rtl/immediate_generator.v \
+rtl/data_memory.v \
+rtl/alu.v \
+tb/riscv_cpu_tb.v
+
+Run:
+vvp cpu_test
+
 # Typical Development Workflow
 
 Whenever implementing a new hardware module, follow this process:

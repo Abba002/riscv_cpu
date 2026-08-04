@@ -10,6 +10,7 @@ This testbench verifies that the Control Unit correctly decodes:
 - R-type arithmetic instructions
 - I-type arithmetic instructions
 - Memory instructions
+- Branch instructions
 
 The following instructions are tested:
 
@@ -30,11 +31,15 @@ Memory
 10. LW
 11. SW
 
+Branch
+12. BEQ
+
 For each instruction, the testbench verifies:
 
 - Register write enable
 - ALU source selection
 - Memory control signals
+- Branch control signals
 - ALU control output
 
 -----------------------------------------------------------------------------

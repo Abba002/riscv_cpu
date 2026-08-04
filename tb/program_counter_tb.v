@@ -20,11 +20,13 @@ The following behaviors are tested:
 module program_counter_tb;
     reg clk;
     reg reset;
+    reg next_pc;
     wire [31:0] pc;
 
     program_counter dut(
         .clk(clk),
         .reset(reset),
+        .next_pc(next_pc),
         .pc(pc)
     );
 
@@ -32,34 +34,31 @@ module program_counter_tb;
     initial begin
         clk = 0;
         reset = 1;
+        next_pc = 32'd0;
         
+        // Release reset
         #10;
-        $display("After reset, pc = %d", pc);
-
         reset = 0;
 
+        // Load PC = 4
+        next_pc = 32'd4;
         #10;
-        $display("After 1 increment: PC = %d", pc);
+        $display("PC = %d", pc);
 
+        // Load PC = 8
+        next_pc = 32'd8;
         #10;
-        $display("After 2 increments: PC = %d", pc);
+        $display("PC = %d", pc);
 
+        // Load PC = 16
+        next_pc = 32'd16;
         #10;
-        reset = 1;
+        $display("PC = %d", pc);
 
+        // Load PC = 20
+        next_pc = 32'd20;
         #10;
-        $display("After 3 increments: PC = %d", pc);
-
-        reset = 0;
-
-        #10;
-        $display("After 4 increments: PC = %d", pc);
-
-        #10;
-        $display("After 5 increments: PC = %d", pc);
-
-        #10;
-        $display("After 6 increments: PC = %d", pc);
+        $display("PC = %d", pc);
 
         $finish;
 

@@ -17,13 +17,16 @@ The CPU performs the following operations:
 
 Current Features:
 
-- Sequential instruction fetch
+- Sequential instruction execution
 - R-type arithmetic instructions
 - I-type arithmetic instructions
 - Load Word (LW)
 - Store Word (SW)
+- Branch Equal (BEQ)
+- Immediate generation
 - Register write-back
 - Data memory access
+- Branch decision logic
 
 Inputs:
 clk         System clock
@@ -58,9 +61,14 @@ module riscv_cpu(
     wire [31:0] immediate;
     wire [31:0] read_data2;
 
+    wire [31:0] next_pc;
+    wire zero;
+    wire branch;
+
     program_counter pc_inst(
         .clk(clk),
         .reset(reset),
+        .next_pc(next_pc),
         .pc(pc)
     );
 
@@ -75,7 +83,8 @@ module riscv_cpu(
         .alu_control(alu_control),
         .alu_src(alu_src),
         .mem_to_reg(mem_to_reg),
-        .mem_write(mem_write)
+        .mem_write(mem_write),
+        .branch(branch)
     );
 
     wire [4:0] rs1;
@@ -106,7 +115,8 @@ module riscv_cpu(
         .a(read_data1),
         .b(alu_input_b),
         .alu_control(alu_control),
-        .result(alu_result)
+        .result(alu_result),
+        .zero(zero)
     );
 
     data_memory dm_inst(
@@ -120,4 +130,7 @@ module riscv_cpu(
     assign alu_input_b = alu_src ? immediate : read_data2;
 
     assign write_data = mem_to_reg ? memory_read_data : alu_result; //write back mux for LW
+
+    assign next_pc = (branch && zero) ? (pc + immediate) : (pc + 32'd4); // compute the next program counter
+
 endmodule

@@ -21,6 +21,9 @@ Currently, the Control Unit supports:
     • LW
     • SW
 
+Branch Instructions
+    • BEQ
+
 The opcode identifies the instruction type, while the funct3 and funct7
 fields determine the specific ALU operation.
 
@@ -41,6 +44,8 @@ mem_to_reg     Selects Register File write-back source
 
 mem_write      Enables writing to Data Memory
 
+branch         Enables branch evaluation
+
 Notes:
 - Combinational logic (no clock required)
 - Unsupported instructions keep the default control values
@@ -52,7 +57,8 @@ module control_unit(
     output reg [2:0] alu_control,
     output reg alu_src,
     output reg mem_to_reg,
-    output reg mem_write
+    output reg mem_write,
+    output reg branch
 );
 
 wire [6:0] opcode;
@@ -69,6 +75,7 @@ assign funct7 = instruction[31:25];
         alu_src = 1'b0;
         mem_write = 1'b0;
         mem_to_reg = 1'b0;
+        branch = 1'b0;
 
         case(opcode)
 
@@ -109,15 +116,23 @@ assign funct7 = instruction[31:25];
                     mem_write  = 1'b1;
                     alu_control = 3'b000; // ADD address = base + offset
             end
+
+            7'b1100011: begin //BEQ
+                    reg_write  = 1'b0;
+                    alu_src    = 1'b0;
+                    mem_to_reg = 1'b0;
+                    mem_write  = 1'b0;
+                    branch     = 1'b1;
+                    alu_control= 3'b001; //SUB
+            end
         endcase
     end
 endmodule
 
 /*
 Future Work:
-- Branch instructions (BEQ, BNE)
+- Branch instructions (BNE)
 - Jump instructions (JAL, JALR)
 - Additional control signals
-    • branch
     • jump
 */

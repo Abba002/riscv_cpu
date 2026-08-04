@@ -63,19 +63,39 @@ initial begin
 
     // LW x5, 4(x0)
     // x5 = memory[0] = 42
-    memory[0] = 32'h00402283;
+    //memory[0] = 32'h00402283;
 
     // SW x5, 8(x0)
     // memory[1] = x5 = 77
-    memory[1] = 32'h00502423;
+    //memory[1] = 32'h00502423;
 
     // LW x6, 8(x0)
     // x6 = memory[2], should be 42 if SW worked
-    memory[2] = 32'h00802303;
+    //memory[2] = 32'h00802303;
 
     // ADDI x7, x6, 5
     // x7 = 42 + 5 = 47
-    memory[3] = 32'h00530393;
+    //memory[3] = 32'h00530393;
+
+    // ADDI x1, x0, 5
+    // x1 = 5
+    memory[0] = 32'h00500093;
+
+    // ADDI x2, x0, 5
+    // x2 = 5
+    memory[1] = 32'h00500113;
+
+    // BEQ x1, x2, +8
+    // Since x1 == x2, skip memory[3] and branch to memory[4]
+    memory[2] = 32'h00208463;
+
+    // ADDI x3, x0, 99
+    // This instruction should be skipped
+    memory[3] = 32'h06300193;
+
+    // ADDI x3, x0, 42
+    // This instruction should execute
+    memory[4] = 32'h02A00193;
 end
 
 

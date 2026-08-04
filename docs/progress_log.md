@@ -577,3 +577,157 @@ Write-back multiplexing
 Memory write enable control
 S-type immediate extraction
 Full memory datapath verification
+
+---
+
+# Branch Instruction Support
+
+## Objectives
+
+- Add conditional branch support to the processor
+- Implement the `BEQ` instruction
+- Generate and verify B-type immediates
+- Allow the Program Counter to select between sequential and branch addresses
+- Test both branch-taken and branch-not-taken behavior
+
+---
+
+## Control Unit Updates
+
+Expanded the Control Unit to support:
+
+- `BEQ`
+
+Added the control signal:
+
+- `branch`
+
+For `BEQ`, the Control Unit generates:
+
+| Signal | Value |
+|---|---:|
+| `reg_write` | `0` |
+| `alu_src` | `0` |
+| `mem_to_reg` | `0` |
+| `mem_write` | `0` |
+| `branch` | `1` |
+| `alu_control` | `001` (`SUB`) |
+
+The ALU subtracts the two source-register values so the processor can determine whether they are equal.
+
+---
+
+## ALU Updates
+
+Added a combinational `zero` output to the ALU.
+
+The zero flag is asserted when:
+
+```verilog
+result == 32'd0
+
+For BEQ, the ALU performs:
+
+rs1 - rs2
+
+If the result is zero, the two registers are equal.
+
+Verified:
+
+zero = 0 for a nonzero subtraction result
+zero = 1 for a zero subtraction result
+Immediate Generator Updates
+
+Expanded the Immediate Generator to support B-type branch immediates.
+
+The branch immediate is reconstructed from:
+
+instruction[31]
+instruction[7]
+instruction[30:25]
+instruction[11:8]
+1'b0
+
+Verified:
+
+Positive B-type immediate: +8
+Negative B-type immediate: -8
+
+The Immediate Generator now supports:
+
+I-type immediates
+S-type immediates
+B-type immediates
+Program Counter Updates
+
+Updated the Program Counter so the next address is supplied through a new input:
+
+next_pc
+
+The Program Counter now stores the value selected by the CPU datapath instead of always calculating PC + 4 internally.
+
+This allows future support for:
+
+Sequential execution
+Branch instructions
+Jump instructions
+CPU Datapath Updates
+
+Added next-PC selection logic to the top-level CPU.
+
+The processor selects:
+
+PC + branch immediate
+
+when:
+
+branch && zero
+
+Otherwise, it selects:
+
+PC + 4
+
+This allows the processor to change its execution path based on a register comparison.
+
+Branch-Taken Verification
+
+Test program:
+
+ADDI x1, x0, 5
+ADDI x2, x0, 5
+BEQ  x1, x2, +8
+ADDI x3, x0, 99
+ADDI x3, x0, 42
+
+Observed PC sequence:
+
+0 → 4 → 8 → 16
+
+The instruction at PC = 12 was skipped, confirming that the branch was taken.
+
+Branch-Not-Taken Verification
+
+Test program:
+
+ADDI x1, x0, 5
+ADDI x2, x0, 6
+BEQ  x1, x2, +8
+ADDI x3, x0, 99
+ADDI x4, x0, 42
+
+Observed PC sequence:
+
+0 → 4 → 8 → 12 → 16
+
+The processor continued sequentially because the register values were not equal.
+
+Concepts Learned
+Conditional control flow
+B-type instruction format
+Branch-offset reconstruction
+ALU zero-flag generation
+Branch-taken logic
+Next-PC multiplexing
+Separating PC storage from next-address calculation
+Verifying both outcomes of a conditional instruction
+

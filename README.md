@@ -35,6 +35,6 @@ The processor will eventually include:
 * [✅] Instruction Memory
 * [✅] Program Counter
 * [✅] Control Unit
-* [ ] Data Memory
+* [✅] Data Memory
 * [ ] Single-Cycle CPU
 * [ ] Pipeline

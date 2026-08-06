@@ -56,8 +56,10 @@ module riscv_cpu(
     wire alu_src;
     wire [1:0] writeback_select;
     wire mem_write;
-    wire jump;
     wire [31:0] pc_plus_4;
+    wire [1:0] jump_control;
+    wire [31:0] jal_target;
+    wire [31:0] jalr_target;
 
     wire [31:0] write_data;
     wire [31:0] memory_read_data;
@@ -87,7 +89,7 @@ module riscv_cpu(
         .alu_control(alu_control),
         .alu_src(alu_src),
         .writeback_select(writeback_select),
-        .jump(jump),
+        .jump_control(jump_control),
         .mem_write(mem_write),
         .branch_control(branch_control)
     );
@@ -140,19 +142,35 @@ module riscv_cpu(
     // Selects the value written into the destination register.
     // 00 -> ALU result
     // 01 -> Data Memory output
-    // 10 -> PC + 4 (JAL)
+    // 10 -> PC + 4 (JAL/JALR)
     assign write_data = (writeback_select == 2'b01) ? memory_read_data : (writeback_select == 2'b10) ? pc_plus_4 : alu_result; //write back mux for LW
 
     assign branch_taken = ((branch_control == 2'b01) && zero) || ((branch_control == 2'b10) && !zero);
 
-    //Next Program Counter Logic
+    // Next Program Counter Logic
     // Jump:
-    //     next_pc = pc + immediate
+    //     JAL  -> PC + immediate
+    //     JALR -> ALU result (bit 0 cleared)
     // Taken Branch:
-    //     next_pc = pc + immediate
+    //     PC + immediate
     // Otherwise:
-    //     next_pc = pc + 4
-    assign next_pc = (jump || branch_taken)? (pc +immediate): pc_plus_4; // compute the next program counter
+    //     PC + 4
+    assign next_pc =
+       (jump_control == 2'b01) ? jal_target  :
+       (jump_control == 2'b10) ? jalr_target :
+       branch_taken       ? (pc + immediate) :
+        pc_plus_4;
+
+    // Jump Target Selection
+    // JAL:
+    //     Target = PC + immediate
+    // JALR:
+    //     Target = rs1 + immediate
+    //     Least-significant bit is forced to 0.
+    // Both instructions write:
+    //     rd = PC + 4
+    assign jal_target = pc + immediate;
+    assign jalr_target = {alu_result[31:1], 1'b0};
 
 
 endmodule

@@ -17,6 +17,7 @@ The following cases are tested:
 5. Negative B-type immediate
 6. Postive J-type immediates
 7. Negative J-type immediates
+8. JALR I-type immediates
 
 -----------------------------------------------------------------------------
 */

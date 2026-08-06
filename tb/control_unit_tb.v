@@ -38,6 +38,7 @@ Branch
 
 Jump
 14. JAL
+15. JALR
 
 For each instruction, the testbench verifies:
 
@@ -61,7 +62,7 @@ module control_unit_tb;
     wire        mem_write;
     wire [1:0] branch_control;
     wire [1:0] writeback_select;
-    wire        jump;
+    wire [1:0] jump_control;
 
     control_unit dut (
         .instruction(instruction),
@@ -71,7 +72,7 @@ module control_unit_tb;
         .mem_write(mem_write),
         .branch_control(branch_control),
         .writeback_select(writeback_select),
-        .jump(jump)
+        .jump_control(jump_control)
     );
 
     initial begin
@@ -143,8 +144,12 @@ module control_unit_tb;
         // JAL x1, +8
         instruction = {1'b0, 10'b0000000100, 1'b0, 8'b00000000, 5'd1, 7'b1101111};
         #10;
-        $display("JAL: reg_write = %b, writeback_select = %b, jump = %b", reg_write, writeback_select, jump);
+        $display("JAL: reg_write = %b, writeback_select = %b, jump_control = %b", reg_write, writeback_select, jump_control);
 
+        // JALR x1, 8(x5)
+        instruction = {12'd8, 5'd5, 5'd1, 7'b1100111};
+        #10;
+        $display("JALR: reg_write = %b, alu_src = %b, writeback_select = %b, jump_control = %b, alu_control = %b", reg_write, alu_src, writeback_select, jump_control, alu_control);
         $finish;
     end
 

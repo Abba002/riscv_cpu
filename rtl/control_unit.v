@@ -27,6 +27,7 @@ Currently, the Control Unit supports:
 
 -Jump Instructions
     • JAL
+    • JALR
 
 The opcode identifies the instruction type, while the funct3 and funct7
 fields determine the specific ALU operation.
@@ -55,7 +56,11 @@ branch_control Selects the branch operation
                01 = BEQ
                10 = BNE
 
-jump           enablec unconditional jump execution
+jump_control    Selects the jump operation
+
+                00 = No jump
+                01 = JAL
+                10 = JALR
 
 Notes:
 - Combinational logic (no clock required)
@@ -70,7 +75,7 @@ module control_unit(
     output reg [1:0] writeback_select,
     output reg mem_write,
     output reg [1:0] branch_control,
-    output reg jump
+    output reg [1:0] jump_control
 );
 
 wire [6:0] opcode;
@@ -88,7 +93,7 @@ assign funct7 = instruction[31:25];
         mem_write = 1'b0;
         branch_control = 2'b00;
         writeback_select = 2'b00;
-        jump = 1'b0;
+        jump_control = 2'b00;
 
         case(opcode)
 
@@ -146,7 +151,17 @@ assign funct7 = instruction[31:25];
                     mem_write        = 1'b0;
                     branch_control   = 2'b00;
                     writeback_select = 2'b10;
-                    jump             = 1'b1;
+                    jump_control     = 2'b01;
+            end
+
+            7'b1100111: begin // JALR
+                    reg_write        =1'b1;
+                    alu_src          =1'b1; //rs1 +immediate
+                    mem_write        =1'b0;
+                    branch_control   =2'b00;
+                    writeback_select =2'b10; //write pc+4 
+                    jump_control     =2'b10;
+                    alu_control      =3'b000; //add
             end
         endcase
     end
@@ -154,5 +169,6 @@ endmodule
 
 /*
 Future Work:
-- Jump instructions (JALR)
+- U-type instructions (LUI, AUIPC)
+- Additional branch instructions (BLT, BGE)
 */

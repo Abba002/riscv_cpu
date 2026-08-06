@@ -63,6 +63,9 @@ module riscv_cpu_tb;
         
         #10;
         $display("PC=%d | Instruction=%h | A=%d | B=%d | ALU result=%d", pc, instruction,$signed(read_data1),$signed(alu_input_b),$signed(alu_result));
+
+        #10;
+        $display("PC=%d | Instruction=%h | A=%d | B=%d | ALU result=%d", pc, instruction,$signed(read_data1),$signed(alu_input_b),$signed(alu_result));
         $finish;    
     end
 

@@ -27,6 +27,7 @@ Current Features:
 - Register write-back
 - Data memory access
 - Branch decision logic
+- Jump dectison logic
 
 Inputs:
 clk         System clock
@@ -53,8 +54,10 @@ module riscv_cpu(
     wire reg_write;
     wire [2:0] alu_control;
     wire alu_src;
-    wire mem_to_reg;
+    wire [1:0] writeback_select;
     wire mem_write;
+    wire jump;
+    wire [31:0] pc_plus_4;
 
     wire [31:0] write_data;
     wire [31:0] memory_read_data;
@@ -83,7 +86,8 @@ module riscv_cpu(
         .reg_write(reg_write),
         .alu_control(alu_control),
         .alu_src(alu_src),
-        .mem_to_reg(mem_to_reg),
+        .writeback_select(writeback_select),
+        .jump(jump),
         .mem_write(mem_write),
         .branch_control(branch_control)
     );
@@ -128,12 +132,27 @@ module riscv_cpu(
         .read_data(memory_read_data)
     );
     
+
+    assign pc_plus_4 = pc + 32'd4;
+
     assign alu_input_b = alu_src ? immediate : read_data2;
 
-    assign write_data = mem_to_reg ? memory_read_data : alu_result; //write back mux for LW
+    // Selects the value written into the destination register.
+    // 00 -> ALU result
+    // 01 -> Data Memory output
+    // 10 -> PC + 4 (JAL)
+    assign write_data = (writeback_select == 2'b01) ? memory_read_data : (writeback_select == 2'b10) ? pc_plus_4 : alu_result; //write back mux for LW
 
     assign branch_taken = ((branch_control == 2'b01) && zero) || ((branch_control == 2'b10) && !zero);
 
-    assign next_pc = branch_taken ? (pc + immediate) : (pc + 32'd4); // compute the next program counter
+    //Next Program Counter Logic
+    // Jump:
+    //     next_pc = pc + immediate
+    // Taken Branch:
+    //     next_pc = pc + immediate
+    // Otherwise:
+    //     next_pc = pc + 4
+    assign next_pc = (jump || branch_taken)? (pc +immediate): pc_plus_4; // compute the next program counter
+
 
 endmodule

@@ -77,7 +77,7 @@ initial begin
     // x7 = 42 + 5 = 47
     //memory[3] = 32'h00530393;
     
-    // BEQ sequence
+    // BEQ test
     // ADDI x1, x0, 5
     // x1 = 5
     //memory[0] = 32'h00500093;
@@ -98,21 +98,44 @@ initial begin
     // This instruction should execute
     //memory[4] = 32'h02A00193;
 
-    //BNE sequence
+    //BNE test
     // ADDI x1, x0, 5
-    memory[0] = 32'h00500093;
+    //memory[0] = 32'h00500093;
 
     // ADDI x2, x0, 6
-    memory[1] = 32'h00600113;
+    //memory[1] = 32'h00600113;
 
     // BNE x1, x2, +8
-    memory[2] = 32'h00209463;
+    //memory[2] = 32'h00209463;
 
     // Should be skipped
-    memory[3] = 32'h06300193;
+    //memory[3] = 32'h06300193;
 
     // Should execute
-    memory[4] = 32'h02A00193;
+    //memory[4] = 32'h02A00193;
+
+        // ADDI x5, x0, 10
+    // x5 = 10
+    //memory[0] = 32'h00A00293;
+
+    //JAL test
+    // ADDI x5, x0, 10
+    // x5 = 10
+    memory[0] = 32'h00A00293;
+
+    // JAL x1, +8
+    // x1 = PC + 4 = 8
+    // Jump from PC = 4 to PC = 12
+    memory[1] = 32'h008000EF;
+
+    // ADDI x3, x0, 99
+    // This instruction should be skipped
+    memory[2] = 32'h06300193;
+
+    // ADDI x2, x1, 5
+    // x1 should contain the return address 8
+    // x2 = 8 + 5 = 13
+    memory[3] = 32'h00508113;
 end
 
 

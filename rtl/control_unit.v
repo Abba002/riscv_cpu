@@ -21,9 +21,12 @@ Currently, the Control Unit supports:
     • LW
     • SW
 
-Branch Instructions
+-Branch Instructions
     • BEQ
     • BNE
+
+-Jump Instructions
+    • JAL
 
 The opcode identifies the instruction type, while the funct3 and funct7
 fields determine the specific ALU operation.
@@ -39,9 +42,10 @@ alu_src        Selects the ALU second operand
                0 = Register File
                1 = Immediate Generator
 
-mem_to_reg     Selects Register File write-back source
-               0 = ALU result
-               1 = Data Memory output
+writeback_select    Selects Register File write-back source
+                    00 = ALU result
+                    01 = Data Memory output
+                    10 = PC + 4
 
 mem_write      Enables writing to Data Memory
 
@@ -50,6 +54,8 @@ branch_control Selects the branch operation
                00 = No branch
                01 = BEQ
                10 = BNE
+
+jump           enablec unconditional jump execution
 
 Notes:
 - Combinational logic (no clock required)
@@ -61,9 +67,10 @@ module control_unit(
     output reg reg_write,
     output reg [2:0] alu_control,
     output reg alu_src,
-    output reg mem_to_reg,
+    output reg [1:0] writeback_select,
     output reg mem_write,
-    output reg [1:0] branch_control
+    output reg [1:0] branch_control,
+    output reg jump
 );
 
 wire [6:0] opcode;
@@ -79,8 +86,9 @@ assign funct7 = instruction[31:25];
         reg_write = 1'b0;
         alu_src = 1'b0;
         mem_write = 1'b0;
-        mem_to_reg = 1'b0;
         branch_control = 2'b00;
+        writeback_select = 2'b00;
+        jump = 1'b0;
 
         case(opcode)
 
@@ -109,15 +117,13 @@ assign funct7 = instruction[31:25];
             7'b0000011: begin // LW 
                     reg_write  = 1'b1;
                     alu_src    = 1'b1;
-                    mem_to_reg = 1'b1;
-                    mem_write  = 1'b0;
+                    writeback_select  = 2'b01;
                     alu_control = 3'b000; // ADD address = base + offset
             end
 
             7'b0100011: begin // SW
                     reg_write  = 1'b0;
                     alu_src    = 1'b1;
-                    mem_to_reg = 1'b0;
                     mem_write  = 1'b1;
                     alu_control = 3'b000; // ADD address = base + offset
             end
@@ -125,7 +131,6 @@ assign funct7 = instruction[31:25];
             7'b1100011: begin //Branch Instructions
                     reg_write  = 1'b0;
                     alu_src    = 1'b0;
-                    mem_to_reg = 1'b0;
                     mem_write  = 1'b0;
                     alu_control= 3'b001; //compare registers using subtraction
 
@@ -134,13 +139,20 @@ assign funct7 = instruction[31:25];
                         3'b001: branch_control = 2'b10; // BNE
                     endcase
             end
+
+            7'b1101111: begin // JAL
+                    reg_write        = 1'b1;
+                    alu_src          = 1'b0;
+                    mem_write        = 1'b0;
+                    branch_control   = 2'b00;
+                    writeback_select = 2'b10;
+                    jump             = 1'b1;
+            end
         endcase
     end
 endmodule
 
 /*
 Future Work:
-- Jump instructions (JAL, JALR)
-- Additional control signals
-    • jump
+- Jump instructions (JALR)
 */

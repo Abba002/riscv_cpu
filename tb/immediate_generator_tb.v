@@ -15,6 +15,8 @@ The following cases are tested:
 3. S-type immediate (SW)
 4. Positive B-type immediate
 5. Negative B-type immediate
+6. Postive J-type immediates
+7. Negative J-type immediates
 
 -----------------------------------------------------------------------------
 */
@@ -71,6 +73,32 @@ module immediate_generator_tb;
 
         #10;
         $display("BEQ negative immediate = %0d", $signed(immediate));
+
+        // Test 6 : J-type immediate = +8 (JAL)
+        instruction = {
+            1'b0,          // imm[20]
+            10'b0000000100,// imm[10:1]
+            1'b0,          // imm[11]
+            8'b00000000,   // imm[19:12]
+            5'd1,          // rd = x1
+            7'b1101111     // JAL opcode
+        };
+
+        #10;
+        $display("JAL positive immediate = %0d", $signed(immediate));
+
+        // Test 7 : J-type immediate = -8 (JAL)
+        instruction = {
+            1'b1,           // imm[20]
+            10'b1111111100, // imm[10:1]
+            1'b1,           // imm[11]
+            8'b11111111,    // imm[19:12]
+            5'd1,
+            7'b1101111
+        };
+
+        #10;
+        $display("JAL negative immediate = %0d", $signed(immediate));
 
         $finish;
 

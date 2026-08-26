@@ -140,28 +140,35 @@ initial begin
     //JALR test
         // ADDI x5, x0, 12
     // x5 = 12
-    memory[0] = 32'h00C00293;
+    //memory[0] = 32'h00C00293;
 
     // JALR x1, 8(x5)
     // Target = 12 + 8 = 20
     // x1 = PC + 4 = 8
-    memory[1] = 32'h008280E7;
+    //memory[1] = 32'h008280E7;
 
     // ADDI x3, x0, 99
     // Should be skipped
-    memory[2] = 32'h06300193;
+    //memory[2] = 32'h06300193;
 
     // ADDI x4, x0, 88
     // Should also be skipped
-    memory[3] = 32'h05800213;
+    //memory[3] = 32'h05800213;
 
     // ADDI x6, x0, 77
     // Should also be skipped
-    memory[4] = 32'h04D00313;
+    //memory[4] = 32'h04D00313;
 
     // ADDI x2, x1, 5
     // x1 should contain 8, so x2 = 13
-    memory[5] = 32'h00508113;
+    //memory[5] = 32'h00508113;
+
+    //LUI test
+    //LUI x5, 0x12345
+    memory[0] = 32'h123452B7;
+
+    //ADDI x6, x5, 5
+    memory[1] = 32'h00528313;
 end
 
 

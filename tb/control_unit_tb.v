@@ -150,6 +150,11 @@ module control_unit_tb;
         instruction = {12'd8, 5'd5, 5'd1, 7'b1100111};
         #10;
         $display("JALR: reg_write = %b, alu_src = %b, writeback_select = %b, jump_control = %b, alu_control = %b", reg_write, alu_src, writeback_select, jump_control, alu_control);
+        
+        // LUI x5, 0x12345
+        instruction = {20'h12345, 5'd5, 7'b0110111};
+        #10;
+        $display("LUI: reg_write = %b, writeback_select = %b, branch_control = %b, jump_control = %b", reg_write, writeback_select, branch_control, jump_control);
         $finish;
     end
 

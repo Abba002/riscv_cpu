@@ -101,6 +101,16 @@ module immediate_generator_tb;
         #10;
         $display("JAL negative immediate = %0d", $signed(immediate));
 
+        // Test 8: LUI x5, 0x12345 Expected immediate = 0x12345000
+        instruction = {
+            20'h12345,    // U-type immediate
+            5'd5,         // rd = x5
+            7'b0110111    // LUI opcode
+        };
+
+        #10;
+        $display("LUI immediate = %h",immediate);
+
         $finish;
 
     end

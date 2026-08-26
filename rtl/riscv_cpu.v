@@ -139,11 +139,15 @@ module riscv_cpu(
 
     assign alu_input_b = alu_src ? immediate : read_data2;
 
-    // Selects the value written into the destination register.
+    // Selects the value written into rd.
     // 00 -> ALU result
     // 01 -> Data Memory output
-    // 10 -> PC + 4 (JAL/JALR)
-    assign write_data = (writeback_select == 2'b01) ? memory_read_data : (writeback_select == 2'b10) ? pc_plus_4 : alu_result; //write back mux for LW
+    // 10 -> PC + 4
+    // 11 -> Immediate
+    assign write_data = 
+            (writeback_select == 2'b01) ? memory_read_data : 
+            (writeback_select == 2'b10) ? pc_plus_4 :
+            (writeback_select == 2'b11) ? immediate : alu_result; //write back mux 
 
     assign branch_taken = ((branch_control == 2'b01) && zero) || ((branch_control == 2'b10) && !zero);
 

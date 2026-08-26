@@ -29,6 +29,9 @@ Currently, the Control Unit supports:
     • JAL
     • JALR
 
+- U-Type Instructions
+    • LUI
+
 The opcode identifies the instruction type, while the funct3 and funct7
 fields determine the specific ALU operation.
 
@@ -163,12 +166,23 @@ assign funct7 = instruction[31:25];
                     jump_control     =2'b10;
                     alu_control      =3'b000; //add
             end
+
+            7'b0110111: begin //LUI
+                //writes the U-type immediate directly into rd.
+                // the immediate contains instruction[31:12] followed by 12 zeros
+                reg_write           =1'b1;
+                alu_src             =1'b0;
+                mem_write           =1'b0;
+                branch_control      =2'b00;
+                jump_control        =2'b00;
+                writeback_select    =2'b11;
+            end
         endcase
     end
 endmodule
 
 /*
 Future Work:
-- U-type instructions (LUI, AUIPC)
-- Additional branch instructions (BLT, BGE)
+- U-type instructions (AUIPC)
+- Additional RV32I instructions
 */

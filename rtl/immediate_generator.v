@@ -26,6 +26,9 @@ Currently, the Immediate Generator supports:
     • JAL
     • JALR
 
+- U-type immediates
+    • LUI
+
 For I-type instructions, the immediate value is stored in bits [31:20]
 of the instruction and is sign-extended to 32 bits.
 
@@ -66,6 +69,10 @@ module immediate_generator (
             
             7'b1100111: // JALR
                 immediate = {{20{instruction[31]}}, instruction[31:20]};
+
+            7'b0110111:// LUI (U-type)
+                immediate = {instruction[31:12], 12'b0};
+            
             default:
                 immediate = 32'd0;
 

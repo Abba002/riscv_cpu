@@ -383,3 +383,46 @@ If the design is sequential:
 - Initialize the clock before simulation:
   ```verilog
   clk = 0;
+
+
+Current Instruction Set
+
+R-Type
+✓ ADD
+✓ SUB
+✓ AND
+✓ OR
+✓ XOR
+
+I-Type Arithmetic
+✓ ADDI
+✓ ANDI
+✓ ORI
+✓ XORI
+
+Memory
+✓ LW
+✓ SW
+
+Branch
+✓ BEQ
+✓ BNE
+
+Jump
+✓ JAL
+✓ JALR
+
+U-Type
+✓ LUI
+✓ AUIPC
+
+Total Supported Instructions: 17
+
+Supported Instruction Formats
+
+✓ R-type
+✓ I-type
+✓ S-type
+✓ B-type
+✓ U-type
+✓ J-type

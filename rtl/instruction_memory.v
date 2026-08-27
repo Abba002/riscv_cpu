@@ -165,10 +165,20 @@ initial begin
 
     //LUI test
     //LUI x5, 0x12345
-    memory[0] = 32'h123452B7;
+    //memory[0] = 32'h123452B7;
 
     //ADDI x6, x5, 5
-    memory[1] = 32'h00528313;
+    //memory[1] = 32'h00528313;
+
+    //AUIPC Test
+    //ADDI x1, x0, 5
+    memory[0] = 32'h00500093;
+
+    //AUIPC x5, 0x1
+    memory[1] = 32'h00001297;
+
+    //ADDI x6,x5,5
+    memory[2] = 32'h00528313;
 end
 
 

@@ -59,6 +59,7 @@ module control_unit_tb;
     wire        reg_write;
     wire [2:0]  alu_control;
     wire        alu_src;
+    wire        alu_src_a;
     wire        mem_write;
     wire [1:0] branch_control;
     wire [1:0] writeback_select;
@@ -68,6 +69,7 @@ module control_unit_tb;
         .instruction(instruction),
         .reg_write(reg_write),
         .alu_control(alu_control),
+        .alu_src_a(alu_src_a),
         .alu_src(alu_src),
         .mem_write(mem_write),
         .branch_control(branch_control),
@@ -155,7 +157,13 @@ module control_unit_tb;
         instruction = {20'h12345, 5'd5, 7'b0110111};
         #10;
         $display("LUI: reg_write = %b, writeback_select = %b, branch_control = %b, jump_control = %b", reg_write, writeback_select, branch_control, jump_control);
+
+        // AUIPC x5, 0x1
+        instruction = {20'h00001, 5'd5, 7'b0010111};
+
+        #10;
+        $display("AUIPC: reg_write = %b, alu_src_a = %b, alu_src = %b, writeback_select = %b, alu_control = %b",reg_write,alu_src_a, alu_src, writeback_select, alu_control);
         $finish;
-    end
+   end
 
 endmodule

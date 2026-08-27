@@ -54,6 +54,8 @@ module riscv_cpu(
     wire reg_write;
     wire [2:0] alu_control;
     wire alu_src;
+    wire alu_src_a;
+    wire [31:0] alu_input_a;
     wire [1:0] writeback_select;
     wire mem_write;
     wire [31:0] pc_plus_4;
@@ -88,6 +90,7 @@ module riscv_cpu(
         .reg_write(reg_write),
         .alu_control(alu_control),
         .alu_src(alu_src),
+        .alu_src_a(alu_src_a),
         .writeback_select(writeback_select),
         .jump_control(jump_control),
         .mem_write(mem_write),
@@ -119,7 +122,7 @@ module riscv_cpu(
     );
 
     alu alu_inst(
-        .a(read_data1),
+        .a(alu_input_a),
         .b(alu_input_b),
         .alu_control(alu_control),
         .result(alu_result),
@@ -136,6 +139,8 @@ module riscv_cpu(
     
 
     assign pc_plus_4 = pc + 32'd4;
+
+    assign alu_input_a = alu_src_a ? pc : read_data1;
 
     assign alu_input_b = alu_src ? immediate : read_data2;
 

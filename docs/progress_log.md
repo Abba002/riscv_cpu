@@ -851,3 +851,225 @@ The processor continued sequentially because the registers were equal.
 - Branch decision logic
 - Reusable control architecture
 - Conditional Program Counter selection
+
+---
+
+# U-Type Instruction Support
+
+## Objectives
+
+- Add support for U-type instructions
+- Implement `LUI`
+- Implement `AUIPC`
+- Add U-type immediate generation
+- Extend the ALU datapath so the Program Counter can be used as an ALU operand
+- Complete support for all major RV32I instruction formats
+
+---
+
+## Immediate Generator Updates
+
+Expanded the Immediate Generator to support U-type immediates.
+
+U-type instructions use:
+
+```text
+instruction[31:12]
+```
+
+as the upper 20 bits of the immediate, with the lower 12 bits filled with zeros.
+
+Supported U-type instructions:
+
+- LUI
+- AUIPC
+
+Example:
+
+```text
+0x12345 -> 0x12345000
+```
+
+---
+
+## LUI Support
+
+Implemented `LUI` (Load Upper Immediate).
+
+Example:
+
+```assembly
+LUI x5, 0x12345
+```
+
+Result:
+
+```text
+x5 = 0x12345000
+```
+
+Added a new write-back source using:
+
+```text
+writeback_select = 11
+```
+
+Write-back selection now supports:
+
+| Value | Source |
+|---|---|
+| `00` | ALU result |
+| `01` | Data Memory output |
+| `10` | PC + 4 |
+| `11` | Immediate |
+
+---
+
+## LUI Verification
+
+Test program:
+
+```assembly
+LUI  x5, 0x12345
+ADDI x6, x5, 5
+```
+
+Verified:
+
+```text
+x5 = 0x12345000
+x6 = 0x12345005
+```
+
+This confirmed that the U-type immediate was correctly generated and written into the Register File.
+
+---
+
+## AUIPC Support
+
+Implemented `AUIPC` (Add Upper Immediate to PC).
+
+AUIPC performs:
+
+```text
+rd = PC + immediate
+```
+
+Added a new control signal:
+
+```text
+alu_src_a
+```
+
+ALU input A selection:
+
+```text
+alu_src_a = 0 -> Register File read_data1
+alu_src_a = 1 -> Program Counter
+```
+
+The existing `alu_src` signal continues to select ALU input B:
+
+```text
+alu_src = 0 -> Register File read_data2
+alu_src = 1 -> Immediate
+```
+
+---
+
+## AUIPC Verification
+
+Test program:
+
+```assembly
+ADDI  x1, x0, 5
+AUIPC x5, 0x1
+ADDI  x6, x5, 5
+```
+
+At the AUIPC instruction:
+
+```text
+PC        = 4
+Immediate = 0x00001000 = 4096
+```
+
+Expected:
+
+```text
+x5 = 4 + 4096 = 4100
+```
+
+The following instruction verified the write-back:
+
+```text
+x6 = 4100 + 5 = 4105
+```
+
+Simulation confirmed the expected results.
+
+---
+
+# 17-Instruction Milestone
+
+The processor now supports 17 RISC-V instructions.
+
+## R-Type
+
+- ADD
+- SUB
+- AND
+- OR
+- XOR
+
+## I-Type Arithmetic
+
+- ADDI
+- ANDI
+- ORI
+- XORI
+
+## Memory
+
+- LW
+- SW
+
+## Branch
+
+- BEQ
+- BNE
+
+## Jump
+
+- JAL
+- JALR
+
+## U-Type
+
+- LUI
+- AUIPC
+
+---
+
+## Supported Instruction Formats
+
+The processor now supports all major RV32I instruction formats:
+
+- R-type
+- I-type
+- S-type
+- B-type
+- U-type
+- J-type
+
+---
+
+## Concepts Learned
+
+- U-type instruction format
+- Upper-immediate generation
+- Multi-source Register File write-back
+- ALU input multiplexing
+- Using the Program Counter as an ALU operand
+- PC-relative arithmetic
+- Extending an existing datapath without redesigning core modules

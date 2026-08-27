@@ -72,6 +72,9 @@ module immediate_generator (
 
             7'b0110111:// LUI (U-type)
                 immediate = {instruction[31:12], 12'b0};
+
+            7'b0010111://AUIPC (U-type)
+                immediate = {instruction[31:12], 12'b0};
             
             default:
                 immediate = 32'd0;
@@ -83,5 +86,5 @@ endmodule
 
 /*
 Future Work:
-- Support U-type immediates (LUI, AUIPC)
+
 */

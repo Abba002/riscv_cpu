@@ -31,6 +31,7 @@ Currently, the Control Unit supports:
 
 - U-Type Instructions
     • LUI
+    • AUIPC
 
 The opcode identifies the instruction type, while the funct3 and funct7
 fields determine the specific ALU operation.
@@ -45,6 +46,10 @@ alu_control    Selects the ALU operation
 alu_src        Selects the ALU second operand
                0 = Register File
                1 = Immediate Generator
+
+alu_src_a      Selects ALU input A
+               0 = Register File read_data1
+               1 = Program counter
 
 writeback_select    Selects Register File write-back source
                     00 = ALU result
@@ -75,6 +80,7 @@ module control_unit(
     output reg reg_write,
     output reg [2:0] alu_control,
     output reg alu_src,
+    output reg alu_src_a,
     output reg [1:0] writeback_select,
     output reg mem_write,
     output reg [1:0] branch_control,
@@ -93,6 +99,7 @@ assign funct7 = instruction[31:25];
         alu_control = 3'b000;
         reg_write = 1'b0;
         alu_src = 1'b0;
+        alu_src_a = 1'b0;
         mem_write = 1'b0;
         branch_control = 2'b00;
         writeback_select = 2'b00;
@@ -177,12 +184,26 @@ assign funct7 = instruction[31:25];
                 jump_control        =2'b00;
                 writeback_select    =2'b11;
             end
+
+            7'b0010111: begin //AUIPC
+                //writes the U-type immediate directly into rd.
+                // the immediate contains instruction[31:12] followed by 12 zeros
+                reg_write           =1'b1;
+                alu_src_a           =1'b1;
+                alu_src             =1'b1;
+                mem_write           =1'b0;
+                branch_control      =2'b00;
+                jump_control        =2'b00;
+                writeback_select    =2'b00;
+                alu_control         =3'b000;
+            end
         endcase
     end
 endmodule
 
 /*
 Future Work:
-- U-type instructions (AUIPC)
 - Additional RV32I instructions
+-expanded verification
+-external program loading
 */

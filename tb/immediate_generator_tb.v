@@ -18,6 +18,8 @@ The following cases are tested:
 6. Postive J-type immediates
 7. Negative J-type immediates
 8. JALR I-type immediates
+9. LUI U-type immediates
+10. AUIPC U-type immediates
 
 -----------------------------------------------------------------------------
 */
@@ -71,7 +73,6 @@ module immediate_generator_tb;
             1'b1,       // imm[11]
             7'b1100011  // branch opcode
         };
-
         #10;
         $display("BEQ negative immediate = %0d", $signed(immediate));
 
@@ -84,7 +85,6 @@ module immediate_generator_tb;
             5'd1,          // rd = x1
             7'b1101111     // JAL opcode
         };
-
         #10;
         $display("JAL positive immediate = %0d", $signed(immediate));
 
@@ -97,7 +97,6 @@ module immediate_generator_tb;
             5'd1,
             7'b1101111
         };
-
         #10;
         $display("JAL negative immediate = %0d", $signed(immediate));
 
@@ -107,9 +106,20 @@ module immediate_generator_tb;
             5'd5,         // rd = x5
             7'b0110111    // LUI opcode
         };
-
         #10;
         $display("LUI immediate = %h",immediate);
+
+
+        // Test 9: AUIPC x5, 0x1 expected immediate: 0x00001000
+        instruction = {
+            20'h00001, //upper immediate
+            5'd5,      //rd = x5
+            7'b0010111 //AUIPC opcode
+        };
+        #10;
+        $display("AUIPC instruction = %h, opcode = %b",
+         instruction, instruction[6:0]);
+        $display("AUIPC immediate = %h", immediate);
 
         $finish;
 

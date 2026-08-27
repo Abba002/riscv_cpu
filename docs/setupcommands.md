@@ -426,3 +426,204 @@ Supported Instruction Formats
 ✓ B-type
 ✓ U-type
 ✓ J-type
+
+---
+
+# External Program Loading
+
+Instruction Memory loads programs from external `.mem` files stored in:
+
+```text
+programs/
+```
+
+Example:
+
+```verilog
+initial begin
+    $readmemh("programs/memory_branch_test.mem", memory);
+end
+```
+
+To run a different test program, change the file path in:
+
+```text
+rtl/instruction_memory.v
+```
+
+For example:
+
+```verilog
+$readmemh("programs/arithmetic_test.mem", memory);
+```
+
+or:
+
+```verilog
+$readmemh("programs/jalr_test.mem", memory);
+```
+
+---
+
+## Memory File Format
+
+Each `.mem` file contains one 32-bit instruction per line in hexadecimal.
+
+Example:
+
+```text
+00A00093
+01400113
+002081B3
+FFFFFFFF
+```
+
+Do not include:
+
+```text
+32'h
+```
+
+or semicolons.
+
+---
+
+## Simulation Halt Marker
+
+The value:
+
+```text
+FFFFFFFF
+```
+
+is currently used as a simulation-only end-of-program marker.
+
+Add it as the final line of test programs:
+
+```text
+00A00093
+01400113
+FFFFFFFF
+```
+
+When the CPU fetches `FFFFFFFF`, the testbench terminates the simulation.
+
+---
+
+## CPU Compile Command — PowerShell
+
+Compile:
+
+```powershell
+iverilog -o cpu_test `
+rtl/riscv_cpu.v `
+rtl/program_counter.v `
+rtl/instruction_memory.v `
+rtl/control_unit.v `
+rtl/register_file.v `
+rtl/immediate_generator.v `
+rtl/data_memory.v `
+rtl/alu.v `
+tb/riscv_cpu_tb.v
+```
+
+Run:
+
+```powershell
+vvp cpu_test
+```
+
+Changing only the `.mem` file does not require changes to the CPU RTL.
+
+---
+
+# Current Project Status
+
+## CPU Core
+
+✓ Program Counter  
+✓ Instruction Memory  
+✓ Register File  
+✓ ALU  
+✓ Control Unit  
+✓ Immediate Generator  
+✓ Data Memory  
+✓ Top-Level CPU Integration  
+
+## Supported Instructions
+
+R-Type
+
+✓ ADD  
+✓ SUB  
+✓ AND  
+✓ OR  
+✓ XOR  
+
+I-Type Arithmetic
+
+✓ ADDI  
+✓ ANDI  
+✓ ORI  
+✓ XORI  
+
+Memory
+
+✓ LW  
+✓ SW  
+
+Branch
+
+✓ BEQ  
+✓ BNE  
+
+Jump
+
+✓ JAL  
+✓ JALR  
+
+U-Type
+
+✓ LUI  
+✓ AUIPC  
+
+**Total Supported Instructions: 17**
+
+## Supported Instruction Formats
+
+✓ R-type  
+✓ I-type  
+✓ S-type  
+✓ B-type  
+✓ U-type  
+✓ J-type  
+
+## Development Infrastructure
+
+✓ External `.mem` program loading  
+✓ Reusable test programs  
+✓ Automatic execution monitoring  
+✓ End-of-program marker  
+✓ Simulation timeout protection  
+
+---
+
+# Next Major Phase
+
+## Verification Improvements
+
+Planned:
+
+- Self-checking testbenches
+- Automatic PASS / FAIL reporting
+- Register-state verification
+- Memory-state verification
+- Full-program regression tests
+- Waveform generation and viewing
+
+Future work:
+
+- RISC-V assembler/toolchain integration
+- Additional RV32I instructions
+- FPGA implementation
+- Optional five-stage pipelining

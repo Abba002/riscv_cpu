@@ -12,12 +12,15 @@ module instruction_memory_tb;
         pc = 32'd0;
         #10;
         $display("PC = %d, Instruction = %h", pc, instruction);
+        
         pc = 32'd4;
         #10;
         $display("PC = %d, Instruction = %h", pc, instruction);
+        
         pc = 32'd8;
         #10;
         $display("PC = %d, Instruction = %h", pc, instruction);
+
         $finish;
     end
 

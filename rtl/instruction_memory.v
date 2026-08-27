@@ -1,31 +1,31 @@
-/*
------------------------------------------------------------------------------
-Module: Instruction Memory
-Project: 32-bit RISC-V Processor
-
-Description:
-This module implements a simple read-only instruction memory for the processor.
-It stores up to 256 instructions, each 32 bits wide. The Program Counter (PC)
-provides the memory address, and the corresponding instruction is returned as
-the output.
-
-For this stage of the project, the instruction memory is initialized with a few
-hardcoded placeholder instructions. These will later be replaced with real
-RISC-V machine code loaded from an external file.
-
-Inputs:
-pc          32-bit Program Counter (byte address)
-
-Outputs:
-instruction 32-bit instruction stored at the requested address
-
-Notes:
-- Instruction memory is combinational.
-- Instructions are word-aligned (4 bytes each).
-- The lower two bits of the PC are ignored because every instruction occupies
-  one 32-bit word.
------------------------------------------------------------------------------
-*/
+// ============================================================================
+// Instruction Memory
+// ============================================================================
+//
+// Stores the machine-code instructions executed by the processor.
+//
+// Instructions are loaded from an external hexadecimal .mem file using
+// $readmemh(). This keeps program code separate from the CPU hardware.
+//
+// Each line of the .mem file contains one 32-bit instruction in hexadecimal.
+//
+// Example:
+//
+//     00500093
+//     01400113
+//     002081B3
+//
+// Since each RISC-V instruction is 4 bytes, the Program Counter increments
+// by 4 while the memory array is indexed by words:
+//
+//     PC = 0  -> memory[0]
+//     PC = 4  -> memory[1]
+//     PC = 8  -> memory[2]
+//
+// Different test programs are stored in the programs/ directory.
+// Change the file path in $readmemh() to select the program to execute.
+//
+// ============================================================================
 module instruction_memory(
     input [31:0] pc,
     output [31:0] instruction
@@ -33,9 +33,11 @@ module instruction_memory(
 
 reg [31:0] memory [0:255];
 
-// placeholder instructions
-initial begin
 
+initial begin
+    $readmemh("programs/memory_branch_test.mem",memory); // Load machine-code instructions from an external hexadecimal memory fil
+    
+    // placeholder instructions
     // ADDI x5, x1, 10
     // x5 = 10 + 10 = 20
     //memory[0] = 32'h00A08293;
@@ -172,15 +174,14 @@ initial begin
 
     //AUIPC Test
     //ADDI x1, x0, 5
-    memory[0] = 32'h00500093;
+    //memory[0] = 32'h00500093;
 
     //AUIPC x5, 0x1
-    memory[1] = 32'h00001297;
+    //memory[1] = 32'h00001297;
 
     //ADDI x6,x5,5
-    memory[2] = 32'h00528313;
+    //memory[2] = 32'h00528313;
 end
-
 
 assign instruction = memory[pc[31:2]];
 

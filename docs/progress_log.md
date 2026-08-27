@@ -1073,3 +1073,170 @@ The processor now supports all major RV32I instruction formats:
 - Using the Program Counter as an ALU operand
 - PC-relative arithmetic
 - Extending an existing datapath without redesigning core modules
+
+---
+
+# External Program Loading
+
+## Objectives
+
+- Separate processor hardware from program software
+- Replace hardcoded instructions in Instruction Memory
+- Load machine-code programs from external `.mem` files
+- Create reusable test programs
+- Allow program changes without modifying CPU RTL
+
+---
+
+## Instruction Memory Updates
+
+Updated `instruction_memory.v` to load instructions using:
+
+```verilog
+$readmemh(...)
+```
+
+Instruction Memory now reads machine-code instructions from an external hexadecimal memory file when simulation begins.
+
+Example:
+
+```verilog
+initial begin
+    $readmemh("programs/memory_branch_test.mem", memory);
+end
+```
+
+Each line of the `.mem` file contains one 32-bit RISC-V instruction in hexadecimal.
+
+Example:
+
+```text
+00A00093
+01400113
+002081B3
+```
+
+---
+
+## Program Directory
+
+Created a dedicated directory for external test programs:
+
+```text
+programs/
+```
+
+Example structure:
+
+```text
+programs/
+├── arithmetic_test.mem
+├── memory_branch_test.mem
+├── jalr_test.mem
+├── lui_test.mem
+├── auipc_test.mem
+└── program.mem
+```
+
+The active program is selected by changing the file path used by `$readmemh()` in `instruction_memory.v`.
+
+---
+
+## Program Execution
+
+The CPU can now execute different programs without changing the processor hardware.
+
+Workflow:
+
+1. Select a `.mem` file in `instruction_memory.v`
+2. Run the simulator
+3. Instruction Memory loads the program automatically
+4. The CPU executes the loaded machine code
+
+The RTL does not need to be modified for each program.
+
+---
+
+## End-of-Program Marker
+
+Added a temporary simulation-only halt marker:
+
+```text
+FFFFFFFF
+```
+
+When the testbench detects:
+
+```verilog
+instruction == 32'hFFFFFFFF
+```
+
+the simulation terminates.
+
+This allows programs of different lengths to run without manually changing the simulation runtime.
+
+---
+
+## Simulation Timeout
+
+Added a timeout safety mechanism:
+
+```verilog
+#100000;
+```
+
+If a program enters an unexpected infinite loop or never reaches the halt marker, the testbench terminates the simulation and reports a timeout.
+
+---
+
+## Execution Monitoring
+
+Updated the CPU testbench to use `$monitor` for automatic execution output.
+
+Displayed signals include:
+
+- Program Counter
+- Current instruction
+- ALU input A
+- ALU input B
+- ALU result
+
+Signed intermediate wires are used so Icarus Verilog can display signed values correctly through `$monitor`.
+
+---
+
+## External Program Verification
+
+Verified external program loading using a multi-instruction program containing:
+
+- ADDI
+- ADD
+- SW
+- LW
+- BEQ
+
+The program successfully:
+
+1. Created register values
+2. Performed arithmetic
+3. Stored a value into Data Memory
+4. Loaded the stored value
+5. Compared registers
+6. Took a branch
+7. Skipped the expected instruction
+8. Reached the simulation halt marker
+
+This confirmed that the processor can execute programs loaded entirely from external files.
+
+---
+
+## Concepts Learned
+
+- Separating hardware from software
+- External memory initialization
+- `$readmemh`
+- Machine-code program files
+- Runtime-independent simulation length
+- Simulation halt detection
+- Simulation timeout protection
+- Reusable processor test programs
